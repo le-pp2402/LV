@@ -2,6 +2,7 @@ package com.phatpl.learnvocabulary.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.stereotype.Component;
 
 
 @Getter
@@ -9,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Component
 @Table(name = "users")
 public class User {
     @Id

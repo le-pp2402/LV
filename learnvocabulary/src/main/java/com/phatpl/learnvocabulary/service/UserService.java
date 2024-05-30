@@ -1,14 +1,10 @@
 package com.phatpl.learnvocabulary.service;
 
 import com.phatpl.learnvocabulary.model.User;
-import com.phatpl.learnvocabulary.repository.BaseRepository;
+import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
-public class UserService {
-    public static BaseRepository<User> userRepo;
-    public static User findById(int id) {
-        Optional<User> userOpt = userRepo.findById(id);
-        return (userOpt.isPresent() ? userOpt.get() : null);
-    }
+@Service
+public interface UserService {
+    public User findById(Integer id);
+    public User findByUsernameAndPassword(String username, String password);
 }
