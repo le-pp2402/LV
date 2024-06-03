@@ -7,8 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserInfo {
-    private Integer id;
+public class UserResponse {
     private String username;
     private String email;
     private Boolean isAdmin;
