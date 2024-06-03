@@ -6,18 +6,14 @@ import com.phatpl.learnvocabulary.mapper.RegisterMapper;
 import com.phatpl.learnvocabulary.mapper.UserMapper;
 import com.phatpl.learnvocabulary.model.User;
 import com.phatpl.learnvocabulary.repository.UserRepository;
-import com.phatpl.learnvocabulary.util.Logger;
 import com.phatpl.learnvocabulary.util.Regex;
-import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -59,12 +55,12 @@ public class UserService {
             bad = "invalid password";
         } else if (!Regex.checkRegex(request.getEmail(), Regex.REGEX_EMAIL)) {
             bad = "invalid email";
-        } else if (userRepository.findByEmail(request.getEmail()).size() != 0) {
+        } else if (!userRepository.findByEmail(request.getEmail()).isEmpty()) {
             bad = "existed email";
-        } else if (userRepository.findByUsername(request.getUsername()).size() != 0) {
+        } else if (!userRepository.findByUsername(request.getUsername()).isEmpty()) {
             bad = "existed username";
         }
-        if (!bad.equals("")) return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(bad);
+        if (!bad.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(bad);
 
         User user = registerMapper.convert(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));

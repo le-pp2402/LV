@@ -1,17 +1,15 @@
 package com.phatpl.learnvocabulary.controller;
 
 import com.phatpl.learnvocabulary.dto.request.RegisterRequest;
-import com.phatpl.learnvocabulary.service.AuthService;
 import com.phatpl.learnvocabulary.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public AuthController(UserService userService) {

@@ -2,9 +2,6 @@ package com.phatpl.learnvocabulary.mapper;
 
 import com.phatpl.learnvocabulary.dto.response.UserResponse;
 import com.phatpl.learnvocabulary.model.User;
-import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

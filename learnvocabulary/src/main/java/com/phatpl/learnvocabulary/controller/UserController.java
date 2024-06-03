@@ -1,6 +1,5 @@
 package com.phatpl.learnvocabulary.controller;
 
-import com.phatpl.learnvocabulary.dto.request.UserLogin;
 import com.phatpl.learnvocabulary.dto.response.UserResponse;
 import com.phatpl.learnvocabulary.mapper.UserMapper;
 import com.phatpl.learnvocabulary.model.User;
