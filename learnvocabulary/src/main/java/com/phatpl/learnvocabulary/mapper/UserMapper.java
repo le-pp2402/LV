@@ -1,31 +1,23 @@
 package com.phatpl.learnvocabulary.mapper;
 
+import com.phatpl.learnvocabulary.dto.request.RegisterRequest;
 import com.phatpl.learnvocabulary.dto.response.UserResponse;
 import com.phatpl.learnvocabulary.model.User;
-import org.springframework.stereotype.Service;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+    UserMapper instance = Mappers.getMapper(UserMapper.class);
 
-@Service
-public class UserMapper implements BaseMapper<User, UserResponse> {
-
-    @Override
-    public UserResponse convert(User user) {
-        return UserResponse.builder()
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .isAdmin(user.getIsAdmin())
-                .elo(user.getElo())
-                .build();
-    }
-
-    public List<UserResponse> convert(List<User> users) {
-        var listUser = new ArrayList<UserResponse>();
-        for (User user: users) {
-            listUser.add(convert(user));
-        }
-        return listUser;
-    }
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "password", target = "password")
+    @Mapping(source = "email", target = "email")
+    RegisterRequest userToRegisterRequest(User user);
+    UserResponse userToUserResponse(User user);
+    List<UserResponse> userToUserResponse(List<User> users);
+    User registerRequestToUser(RegisterRequest registerRequest);
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userSev;
@@ -24,17 +25,17 @@ public class UserController {
     }
 
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Integer id) {
         User user = userSev.findById(id);
         if (user != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(userMapper.convert(user));
+            return ResponseEntity.status(HttpStatus.OK).body(UserMapper.instance.userToUserResponse(user));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND");
     }
 
 
-    @GetMapping("/user")
+    @GetMapping
     public ResponseEntity<?> findAll() {
         List<UserResponse> users = this.userSev.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(users);

@@ -21,7 +21,7 @@ public class Logger {
         System.out.println(text);
     }
 
-    public static void log(String color, String text){
+    public static void log(String color, String text) {
         System.out.print(color + text + RESET);
     }
 
@@ -39,7 +39,7 @@ public class Logger {
 
     public static void logException(Class clazz, Exception ex, String... log) {
         try {
-            if(log != null && log.length > 0){
+            if (log != null && log.length > 0) {
                 log(PURPLE, log[0] + "\n");
             }
             StackTraceElement stackTraceElements[] = (new Throwable()).getStackTrace();

@@ -1,10 +1,7 @@
 package com.phatpl.learnvocabulary.util;
 
-import java.util.regex.Pattern;
 
-public class Regex {
-    /*
-        https://regexr.com/
+/*
         Username:
             -Must start with an alphabetic character. Can contain the following characters: [a-z] [A-Z] [0-9] and _
         Email:
@@ -21,11 +18,8 @@ public class Regex {
             # anything, at least eight places though
             # end-of-string
      */
-    public static final String REGEX_EMAIL = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
-    public static final String REGEX_USERNAME = "^[A-Za-z][A-Za-z0-9_]{7,29}$";
-    public static final String REGEX_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-
-    public static boolean checkRegex(String text, final String regex) {
-        return Pattern.compile(regex).matcher(text).matches();
-    }
+public class Regex {
+    public static final String EMAIL = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+    public static final String USERNAME = "^[A-Za-z][A-Za-z0-9_]{7,29}$";
+    public static final String PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
 }

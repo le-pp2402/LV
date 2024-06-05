@@ -11,25 +11,15 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Builder
 @Entity
-@Component
 @Table(name = "users")
+@Component
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "username")
     private String username;
-
-    @Column(name = "password")
     private String password;
-
-    @Column(name = "email")
     private String email;
-
-    @Column(name = "is_admin")
-    private Boolean isAdmin;
-
-    @Column(name = "elo")
-    private Integer elo;
+    private Boolean isAdmin = false;
+    private Integer elo = 0;
 }

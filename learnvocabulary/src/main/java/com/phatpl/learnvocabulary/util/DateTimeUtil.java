@@ -5,18 +5,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DateTimeUtil {
-    public String convertDateToString(Date date, final String format) {
+    public String toString(Date date, final String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         String dateString = null;
         try {
             dateString = sdf.format(date);
         } catch (Exception e) {
-                Logger.logException(DateTimeUtil.class, e);
+            Logger.logException(DateTimeUtil.class, e);
         }
         return dateString;
     }
 
-    public Date convertStringToDateUtil(String dateString, final String format) {
+    public Date toDateUtil(String dateString, final String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         Date date = null;
         try {
@@ -27,7 +27,7 @@ public class DateTimeUtil {
         return date;
     }
 
-    public java.sql.Date convertStringToDateSQL(String dateString, final String format) {
+    public java.sql.Date toDateSQL(String dateString, final String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         java.sql.Date res = null;
         try {
