@@ -1,7 +1,7 @@
 package com.phatpl.learnvocabulary.controller;
 
 import com.phatpl.learnvocabulary.dto.response.UserResponse;
-import com.phatpl.learnvocabulary.mapper.UserMapper;
+import com.phatpl.learnvocabulary.mapper.UserResponseMapper;
 import com.phatpl.learnvocabulary.model.User;
 import com.phatpl.learnvocabulary.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,10 @@ import java.util.List;
 public class UserController {
 
     private final UserService userSev;
-    private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userSev, UserMapper userMapper) {
+    public UserController(UserService userSev) {
         this.userSev = userSev;
-        this.userMapper = userMapper;
     }
 
 
@@ -29,7 +27,7 @@ public class UserController {
     public ResponseEntity<?> findById(@PathVariable Integer id) {
         User user = userSev.findById(id);
         if (user != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(UserMapper.instance.userToUserResponse(user));
+            return ResponseEntity.status(HttpStatus.OK).body(UserResponseMapper.instance.toDTO(user));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND");
     }

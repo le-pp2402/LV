@@ -20,7 +20,7 @@ public class Resource {
     Integer id;
     String title;
     Integer user_id;
-    String sources;
+    String source;
     String en_sub;
     String vi_sub;
     Date updated_at;

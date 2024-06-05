@@ -19,9 +19,9 @@ public class History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     @Column(name = "user_1_id")
-    Integer user1Id;
+    Integer idUser1;
     @Column(name = "user_2_id")
-    Integer user2Id;
+    Integer idUser2;
     @Column(name = "player_1_score")
     Integer pointPlayer1;
     @Column(name = "player_2_score")

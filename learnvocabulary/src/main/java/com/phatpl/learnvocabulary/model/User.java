@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "users")
 @Component
 public class User {
@@ -20,6 +20,9 @@ public class User {
     private String username;
     private String password;
     private String email;
+    @Builder.Default
     private Boolean isAdmin = false;
+    @Builder.Default
     private Integer elo = 0;
+
 }
