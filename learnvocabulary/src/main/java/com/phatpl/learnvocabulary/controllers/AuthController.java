@@ -1,5 +1,6 @@
 package com.phatpl.learnvocabulary.controllers;
 
+import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
 import com.phatpl.learnvocabulary.services.UserService;
 import jakarta.validation.Valid;
@@ -23,15 +24,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    private ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
-        ResponseEntity<?> response;
+    private ResponseEntity<Response> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
-            response = ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errors.get(0).getDefaultMessage());
+            return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data(new String("ERROR")).build());
         } else {
-            response = ResponseEntity.status(HttpStatus.OK).body(userService.register(request));
+            return ResponseEntity.ok(Response.builder().code(HttpStatus.CREATED.value()).data(userService.register(request)).message("created").build());
         }
-        return response;
     }
 
 }

@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UserResponse {
+    private Integer id;
     private String username;
     private String email;
     private Boolean isAdmin;

@@ -6,12 +6,14 @@ import com.phatpl.learnvocabulary.mappers.RegisterRequestMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
+import com.phatpl.learnvocabulary.utils.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -38,6 +40,7 @@ public class UserService {
         User user = RegisterRequestMapper.instance.toEntity(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return  UserResponseMapper.instance.toDTO(user);
+        var userOpt = userRepository.findByUsername(user.getUsername());
+        return  UserResponseMapper.instance.toDTO(userOpt.get(0));
     }
 }
