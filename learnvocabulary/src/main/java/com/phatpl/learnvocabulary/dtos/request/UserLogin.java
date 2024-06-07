@@ -1,5 +1,6 @@
 package com.phatpl.learnvocabulary.dtos.request;
 
+import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLogin {
+public class UserLogin extends BaseDTO {
     private String username;
     private String password;
 }

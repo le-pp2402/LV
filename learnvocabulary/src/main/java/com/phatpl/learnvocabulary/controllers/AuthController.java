@@ -3,6 +3,7 @@ package com.phatpl.learnvocabulary.controllers;
 import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
 import com.phatpl.learnvocabulary.services.UserService;
+import com.phatpl.learnvocabulary.services.UserServiceTest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final UserService userService;
+    private final UserServiceTest userService;
 
     @Autowired
-    public AuthController(UserService userService) {
+    public AuthController(UserServiceTest userService) {
         this.userService = userService;
     }
 

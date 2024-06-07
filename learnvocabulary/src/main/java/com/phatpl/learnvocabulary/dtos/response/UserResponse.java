@@ -1,5 +1,6 @@
 package com.phatpl.learnvocabulary.dtos.response;
 
+import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import lombok.*;
 
 @Getter
@@ -7,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserResponse {
+public class UserResponse extends BaseDTO {
     private Integer id;
     private String username;
     private String email;

@@ -14,7 +14,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "histories")
-public class History {
+public class History implements BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;

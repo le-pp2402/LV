@@ -1,5 +1,6 @@
 package com.phatpl.learnvocabulary.dtos.request;
 
+import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import com.phatpl.learnvocabulary.utils.Regex;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest {
+public class RegisterRequest extends BaseDTO {
     @Pattern(regexp = Regex.USERNAME, message = "invalid username")
     private String username;
 

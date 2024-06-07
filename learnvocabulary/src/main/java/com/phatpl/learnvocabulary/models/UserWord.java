@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user_word")
-public class UserWord {
+public class UserWord implements BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
@@ -25,8 +25,5 @@ public class UserWord {
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "word_id")
-//    Word word;
+
 }
