@@ -42,7 +42,7 @@ public class BaseService<E extends BaseEntity, REPO extends BaseRepository<E>, D
     }
 
     public boolean deleteById(E e) {
-        if (repo.findById(e.getId()) == null) return false;
+        if (!repo.findById(e.getId()).isPresent()) return false;
         repo.deleteById(e.getId());
         return true;
     }
