@@ -16,15 +16,18 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "users")
-@Component
 public class User implements BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
+    @Column(length = 50, nullable = false)
     String username;
+    @Column(length = 200, nullable = false)
     String password;
+    @Column(nullable = false)
     String email;
     @Builder.Default
+    @Column(updatable = false)
     Boolean isAdmin = false;
     @Builder.Default
     Integer elo = 0;
