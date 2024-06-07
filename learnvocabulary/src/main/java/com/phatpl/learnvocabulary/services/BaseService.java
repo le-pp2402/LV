@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Getter
-@MappedSuperclass
 public class BaseService<E extends BaseEntity, REPO extends BaseRepository<E>, DTO extends BaseDTO> {
     private final BaseMapper<E, DTO> baseMapper;
     private final REPO repo;
@@ -27,7 +26,7 @@ public class BaseService<E extends BaseEntity, REPO extends BaseRepository<E>, D
 
     public DTO findById(Integer id) {
         Optional<E> opt = repo.findById(id);
-        if (!opt.isPresent()) return null;
+        if (opt.isEmpty()) return null;
         return baseMapper.toDTO(opt.get());
     }
 
@@ -36,13 +35,13 @@ public class BaseService<E extends BaseEntity, REPO extends BaseRepository<E>, D
     }
 
     public E update(E entity) {
-        if (!repo.findById(entity.getId()).isPresent()) return null;
+        if (repo.findById(entity.getId()).isEmpty()) return null;
         repo.deleteById(entity.getId());
         return repo.save(entity);
     }
 
     public boolean deleteById(E e) {
-        if (!repo.findById(e.getId()).isPresent()) return false;
+        if (repo.findById(e.getId()).isEmpty()) return false;
         repo.deleteById(e.getId());
         return true;
     }
