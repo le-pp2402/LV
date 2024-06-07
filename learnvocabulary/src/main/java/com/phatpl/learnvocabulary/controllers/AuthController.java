@@ -2,7 +2,6 @@ package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
-import com.phatpl.learnvocabulary.services.UserService;
 import com.phatpl.learnvocabulary.services.UserServiceTest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    private ResponseEntity<Response> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
+    public ResponseEntity<Response> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
-            return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data(new String("ERROR")).build());
+            return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data("ERROR").build());
         } else {
             return ResponseEntity.ok(Response.builder().code(HttpStatus.CREATED.value()).data(userService.register(request)).message("created").build());
         }

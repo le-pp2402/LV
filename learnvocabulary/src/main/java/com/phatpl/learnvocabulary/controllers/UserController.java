@@ -1,9 +1,6 @@
 package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
-import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
-import com.phatpl.learnvocabulary.models.User;
-import com.phatpl.learnvocabulary.services.UserService;
 import com.phatpl.learnvocabulary.services.UserServiceTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
