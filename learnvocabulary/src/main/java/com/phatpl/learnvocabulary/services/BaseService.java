@@ -4,7 +4,6 @@ import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import com.phatpl.learnvocabulary.mappers.BaseMapper;
 import com.phatpl.learnvocabulary.models.BaseEntity;
 import com.phatpl.learnvocabulary.repositories.BaseRepository;
-import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 
 import java.util.List;
