@@ -7,7 +7,6 @@ import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
-import javax.crypto.spec.PSource;
 import java.util.Date;
 
 @Getter

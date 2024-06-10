@@ -5,16 +5,9 @@ import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.services.UserService;
 import com.phatpl.learnvocabulary.utils.Logger;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import org.hibernate.annotations.Parameter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
