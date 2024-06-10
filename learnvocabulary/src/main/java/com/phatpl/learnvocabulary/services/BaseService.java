@@ -27,9 +27,6 @@ public class BaseService<E extends BaseModel,
         return baseMapper.toListDTO(repo.findAll());
     }
 
-//    public List<DTO> findWithFilter(FT ft, Pageable pageable) {
-//        return baseMapper.toListDTO(repo.findWithFilter(ft, pageable).getContent());
-//    }
 
     public DTO findById(Integer id) {
         Optional<E> opt = repo.findById((ID) id);
