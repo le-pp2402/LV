@@ -7,7 +7,6 @@ import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
-import javax.crypto.spec.PSource;
 import java.util.Date;
 
 @Getter
@@ -18,7 +17,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "resources")
-public class Resource implements BaseEntity {
+public class Resource implements BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;

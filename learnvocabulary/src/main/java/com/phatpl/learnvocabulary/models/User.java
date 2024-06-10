@@ -3,7 +3,6 @@ package com.phatpl.learnvocabulary.models;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "users")
-public class User implements BaseEntity {
+public class User implements BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;

@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "words")
-public class Word implements BaseEntity {
+public class Word implements BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;

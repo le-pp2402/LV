@@ -1,20 +1,24 @@
 package com.phatpl.learnvocabulary.services;
 
 import com.phatpl.learnvocabulary.dtos.BaseDTO;
+import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.BaseMapper;
-import com.phatpl.learnvocabulary.models.BaseEntity;
+import com.phatpl.learnvocabulary.models.BaseModel;
 import com.phatpl.learnvocabulary.repositories.BaseRepository;
-import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
 
-@Getter
-public class BaseService<E extends BaseEntity, REPO extends BaseRepository<E>, DTO extends BaseDTO> {
+public class BaseService<E extends BaseModel,
+        DTO extends BaseDTO,
+        FT extends BaseFilter,
+        ID extends Integer> {
     private final BaseMapper<E, DTO> baseMapper;
-    private final REPO repo;
+    private final BaseRepository<E, FT, ID> repo;
 
-    public BaseService(BaseMapper<E, DTO> baseMapper, REPO repo) {
+    @Autowired
+    public BaseService(BaseMapper<E, DTO> baseMapper, BaseRepository<E, FT, ID> repo) {
         this.baseMapper = baseMapper;
         this.repo = repo;
     }
@@ -23,8 +27,9 @@ public class BaseService<E extends BaseEntity, REPO extends BaseRepository<E>, D
         return baseMapper.toListDTO(repo.findAll());
     }
 
+
     public DTO findById(Integer id) {
-        Optional<E> opt = repo.findById(id);
+        Optional<E> opt = repo.findById((ID) id);
         if (opt.isEmpty()) return null;
         return baseMapper.toDTO(opt.get());
     }
@@ -34,14 +39,14 @@ public class BaseService<E extends BaseEntity, REPO extends BaseRepository<E>, D
     }
 
     public E update(E entity) {
-        if (repo.findById(entity.getId()).isEmpty()) return null;
-        repo.deleteById(entity.getId());
+        if (repo.findById((ID) entity.getId()).isEmpty()) return null;
+        repo.deleteById((ID) entity.getId());
         return repo.save(entity);
     }
 
     public boolean deleteById(E e) {
-        if (repo.findById(e.getId()).isEmpty()) return false;
-        repo.deleteById(e.getId());
+        if (repo.findById((ID) e.getId()).isEmpty()) return false;
+        repo.deleteById((ID) e.getId());
         return true;
     }
 }
