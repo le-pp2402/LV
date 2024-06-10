@@ -1,8 +1,15 @@
 package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
-import com.phatpl.learnvocabulary.services.UserServiceTest;
+import com.phatpl.learnvocabulary.filters.UserFilter;
+import com.phatpl.learnvocabulary.models.User;
+import com.phatpl.learnvocabulary.services.UserService;
+import com.phatpl.learnvocabulary.utils.Logger;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,29 +18,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController extends BaseController<User, UserResponse, UserFilter, Integer> {
 
-    private final UserServiceTest userSev;
+    private final UserService userSev;
 
-    @Autowired
-    public UserController(UserServiceTest userSev) {
+    public UserController(UserService userSev) {
+        super(userSev);
         this.userSev = userSev;
     }
 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Integer id) {
-        UserResponse userResponse = userSev.findById(id);
-        if (userResponse != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(userResponse);
-        }
+    @GetMapping("/test")
+    public ResponseEntity<?> findWithFilter(@RequestBody(required = false) UserFilter ft) {
+        Logger.log(ft.getPageNumber().toString());
+//        List<UserResponse> lst = userSev.findWithFilter(ft);
+//        if (lst != null) {
+//            return ResponseEntity.status(HttpStatus.OK).body(lst);
+//        }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND");
     }
 
-
-    @GetMapping
-    public ResponseEntity<?> findAll() {
-        List<UserResponse> users = this.userSev.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(users);
-    }
 }

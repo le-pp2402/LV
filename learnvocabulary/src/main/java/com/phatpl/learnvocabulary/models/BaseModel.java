@@ -1,5 +1,5 @@
 package com.phatpl.learnvocabulary.models;
 
-public interface BaseEntity {
+public interface BaseModel {
     Integer getId();
 }
