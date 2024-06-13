@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
-public class AuthController {
+@RequestMapping("/register")
+public class RegisterController {
     private final UserService userService;
 
     @Autowired
-    public AuthController(UserService userService) {
+    public RegisterController(UserService userService) {
         this.userService = userService;
     }
 
@@ -29,8 +29,13 @@ public class AuthController {
             List<FieldError> errors = bindingResult.getFieldErrors();
             return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data("ERROR").build());
         } else {
-            return ResponseEntity.ok(Response.builder().code(HttpStatus.CREATED.value()).data(userService.register(request)).message("created").build());
+            try {
+                return ResponseEntity.ok(Response.builder().code(HttpStatus.CREATED.value()).data(userService.register(request)).message("created").build());
+            } catch (Exception e) {
+                return ResponseEntity.ok(Response.builder().code(HttpStatus.CREATED.value()).data(e.getMessage()).message("created").build());
+            }
         }
     }
+
 
 }
