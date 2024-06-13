@@ -1,6 +1,5 @@
 package com.phatpl.learnvocabulary.dtos.request;
 
-import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

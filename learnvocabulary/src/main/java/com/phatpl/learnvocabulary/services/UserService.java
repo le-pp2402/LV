@@ -57,7 +57,9 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
 
         userRepository.save(user);
 
-        mailService.sendEmail(genMail(user.getEmail(), user.getCode()));
+//        mailService.sendEmail(genMail(user.getEmail(), user.getCode()));
+
+        mailService.sendEmail(MailUtil.genMail(user.getEmail(), user.getCode()));
 
         var userOpt = userRepository.findByUsername(user.getUsername());
         return UserResponseMapper.instance.toDTO(userOpt.get(0));

@@ -10,7 +10,7 @@ public class MailUtil {
         return 1000 + Math.abs(random.nextInt()) % 1000;
     }
 
-    public SimpleMailMessage genMail(String userEmail, int code) {
+    public static SimpleMailMessage genMail(String userEmail, int code) {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setSubject("CODE");
         mail.setFrom("lephiphatphat@gmail.com");
