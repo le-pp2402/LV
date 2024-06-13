@@ -5,7 +5,6 @@ import com.phatpl.learnvocabulary.dtos.request.LoginRequest;
 import com.phatpl.learnvocabulary.dtos.response.LoginResponse;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.filters.UserFilter;
-import com.phatpl.learnvocabulary.mappers.BaseMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;

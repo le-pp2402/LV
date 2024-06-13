@@ -10,9 +10,7 @@ import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.Logger;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,10 +27,10 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     }
 
     public UserResponse register(RegisterRequest request) throws Exception {
-        if (userRepository.findByEmail(request.getEmail()).size() != 0) {
+        if (!userRepository.findByEmail(request.getEmail()).isEmpty()) {
             throw new RuntimeException("Email exists");
         }
-        if (userRepository.findByUsername(request.getUsername()).size() != 0) {
+        if (!userRepository.findByUsername(request.getUsername()).isEmpty()) {
             throw new RuntimeException("Username exists");
         }
         User user = RegisterRequestMapper.instance.toEntity(request);

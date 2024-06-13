@@ -6,9 +6,7 @@ import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.services.UserService;
-import com.phatpl.learnvocabulary.utils.Logger;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
