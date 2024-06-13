@@ -30,7 +30,9 @@ public class User implements BaseModel {
     Boolean isAdmin = false;
     @Builder.Default
     Integer elo = 0;
-
+    @Builder.Default
+    Boolean actived = false;
+    Integer code;
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
     List<Resource> resource;
 
