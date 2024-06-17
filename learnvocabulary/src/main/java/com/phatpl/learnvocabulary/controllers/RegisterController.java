@@ -40,7 +40,7 @@ public class RegisterController {
 
     @PutMapping("/verify")
     public ResponseEntity<?> verify(@RequestBody VerifyEmailRequest request) {
-        return ResponseEntity.ok(userService.activeUser(request.getId(), request.getCode()));
+        return ResponseEntity.ok(userService.activeUser(request.getMail(), request.getCode()));
     }
 
 }

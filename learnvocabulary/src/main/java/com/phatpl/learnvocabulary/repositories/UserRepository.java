@@ -13,5 +13,7 @@ import java.util.Optional;
 public interface UserRepository extends BaseRepository<User, UserFilter, Integer> {
     List<User> findByUsername(String username);
     List<User> findByEmail(String email);
+    Optional<User> findOneByEmail(String email);
+    Optional<User> findOneByUsername(String username);
     Optional<User> findById(Integer id);
 }
