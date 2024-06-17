@@ -9,9 +9,7 @@ import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
-import com.phatpl.learnvocabulary.utils.Logger;
 import com.phatpl.learnvocabulary.utils.MailUtil;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         this.mailService = mailService;
     }
 
-    public UserResponse register(RegisterRequest request) throws Exception {
+    public UserResponse register(RegisterRequest request) throws RuntimeException {
         if (!userRepository.findOneByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email exists");
         }
@@ -49,7 +47,6 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     }
 
     public Response me(String token) {
-        Object response;
         try {
             var body = JWTService.verifyToken(token).getBody();
             Map<String, Object> obj = (Map<String, Object>) body.get("data");
@@ -92,5 +89,5 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
             return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message(e.getMessage()).build();
         }
         return Response.builder().code(HttpStatus.OK.value()).data("").message("update successful").build();
-    };
+    }
 }

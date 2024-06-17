@@ -1,7 +1,6 @@
 package com.phatpl.learnvocabulary.services;
 
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
-import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.utils.Logger;
 import io.jsonwebtoken.*;
 
