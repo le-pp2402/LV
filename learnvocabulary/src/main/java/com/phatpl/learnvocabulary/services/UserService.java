@@ -49,25 +49,21 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     }
 
     public Response me(String token) {
-        UserResponse userResponse;
+        Object response;
         try {
             var body = JWTService.verifyToken(token).getBody();
             Map<String, Object> obj = (Map<String, Object>) body.get("data");
-            userResponse = UserResponse.builder()
-                    .id((Integer) obj.get("id"))
-                    .username((String) obj.get("username"))
-                    .email((String) obj.get("email"))
-                    .isAdmin((Boolean) obj.get("is_admin"))
-                    .elo((Integer) obj.get("elo"))
+            User user = userRepository.findById((Integer)obj.get("id")).get();
+            return Response.builder()
+                    .code(HttpStatus.OK.value())
+                    .data(UserResponseMapper.instance.toDTO(user))
                     .build();
-        } catch (ExpiredJwtException e) {
-            Logger.log(e.getMessage());
-            return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message("Login session expired").build();
-        } catch (Exception e) {
-            Logger.log(e.getMessage());
-            return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message("Invalid login session").build();
+        } catch (RuntimeException e) {
+            return Response.builder()
+                    .code(HttpStatus.UNAUTHORIZED.value())
+                    .data(e.getMessage())
+                    .build();
         }
-        return Response.builder().code(HttpStatus.OK.value()).data(userResponse).message("Success").build();
     }
 
     public Response activeUser(String userMail, Integer code) {
@@ -83,6 +79,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     public Response updateUserInfo(String token, String oldPassword, String newPassword) {
         try {
             var body = JWTService.verifyToken(token).getBody();
+
             Map<String, Object> obj = (Map<String, Object>) body.get("data");
             var user = userRepository.findOneByUsername((String)obj.get("username")).get();
             if (BCryptPassword.matches(oldPassword, user.getPassword())) {
@@ -91,12 +88,8 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
             } else {
                 return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message("Wrong password").build();
             }
-        } catch (ExpiredJwtException e) {
-            Logger.log(e.getMessage());
-            return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message("Login session expired").build();
-        } catch (Exception e) {
-            Logger.log(e.getMessage());
-            return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message("Invalid login session").build();
+        } catch (RuntimeException e) {
+            return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message(e.getMessage()).build();
         }
         return Response.builder().code(HttpStatus.OK.value()).data("").message("update successful").build();
     };
