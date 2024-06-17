@@ -28,4 +28,6 @@ public class JWTService {
     public static Jws<Claims> verifyToken(String token) throws Exception {
         return Jwts.parser().setSigningKey(SecretKey).parseClaimsJws(token);
     }
+
+
 }
