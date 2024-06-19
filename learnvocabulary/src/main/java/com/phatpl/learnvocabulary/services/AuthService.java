@@ -11,18 +11,26 @@ import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService extends BaseService<User, UserResponse, UserFilter, Integer> {
     private final UserRepository userRepository;
     private final UserResponseMapper userResponseMapper;
+    private final AuthenticationManager authenticationManager;
+    private final JWTService jwtService;
 
     @Autowired
-    public AuthService(UserResponseMapper userResponseMapper, UserRepository userRepository) {
+    public AuthService(UserResponseMapper userResponseMapper, UserRepository userRepository, AuthenticationManager authenticationManager, JWTService jwtService) {
         super(userResponseMapper, userRepository);
         this.userRepository = userRepository;
         this.userResponseMapper = userResponseMapper;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     public static UserResponse getUserInfo() {
@@ -30,25 +38,16 @@ public class AuthService extends BaseService<User, UserResponse, UserFilter, Int
     }
 
     public Response login(LoginRequest userLogin) {
-        Boolean loginSuccess = true;
-        User user = null;
-        if (userRepository.findByUsername(userLogin.getUsername()).isEmpty()) {
-            loginSuccess = false;
-        } else {
-            user = userRepository.findByUsername(userLogin.getUsername()).get(0);
-            if (!BCryptPassword.matches(userLogin.getPassword(), user.getPassword())) {
-                loginSuccess = false;
-            }
-        }
-        if (!loginSuccess)
-            return Response.builder().code(HttpStatus.NOT_FOUND.value()).data("").message("Wrong username or password").build();
-        else {
-            UserResponse userResponse = userResponseMapper.toDTO(user);
-            return Response.builder()
-                    .code(HttpStatus.OK.value())
-                    .data(new LoginResponse(JWTService.genToken(userResponse)))
-                    .message("Success").build();
-        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        userLogin.getUsername(),
+                        BCryptPassword.encode(userLogin.getPassword())
+                )
+        );
+        var user = userRepository.findByUsername(userLogin.getUsername()).orElseThrow(()-> new UsernameNotFoundException("wrong username"));
+        var userResponse = userResponseMapper.toDTO(user);
+        return Response.builder().data(
+                new LoginResponse(jwtService.genDefaultUserToken(userResponse, (UserDetails) user))
+        ).build();
     }
-
 }

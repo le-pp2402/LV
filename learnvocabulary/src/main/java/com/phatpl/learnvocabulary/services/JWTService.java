@@ -4,7 +4,9 @@ import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Base64;
@@ -13,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Service
+@RequiredArgsConstructor
 public class JWTService {
 
     private final String secretKey = "BB4F994CF6B35773CA792F3911E4F";
@@ -51,15 +55,17 @@ public class JWTService {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
     public String createToken(HashMap<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder().setIssuer("learnvocabulary")
-                .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SignatureAlgorithm.HS256, getKey())
                 .compact();
+    }
+
+    public String createToken(UserDetails userDetails) {
+        return createToken(new HashMap<>(), userDetails);
     }
 
     public String genDefaultUserToken(UserResponse userResponse, UserDetails userDetails) {
@@ -70,5 +76,6 @@ public class JWTService {
         extraClaims.put("elo", userResponse.getElo());
         return createToken(extraClaims, userDetails);
     }
+
 
 }
