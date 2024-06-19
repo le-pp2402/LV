@@ -30,25 +30,15 @@ public class AuthService extends BaseService<User, UserResponse, UserFilter, Int
     }
 
     public Response login(LoginRequest userLogin) {
-        Boolean loginSuccess = true;
-        User user = null;
-        if (userRepository.findByUsername(userLogin.getUsername()).isEmpty()) {
-            loginSuccess = false;
-        } else {
-            user = userRepository.findByUsername(userLogin.getUsername()).get(0);
-            if (!BCryptPassword.matches(userLogin.getPassword(), user.getPassword())) {
-                loginSuccess = false;
-            }
-        }
-        if (!loginSuccess)
-            return Response.builder().code(HttpStatus.NOT_FOUND.value()).data("").message("Wrong username or password").build();
-        else {
-            UserResponse userResponse = userResponseMapper.toDTO(user);
+        var optionalUser = userRepository.findByUsername(userLogin.getUsername());
+        if (optionalUser.isPresent() && BCryptPassword.matches(userLogin.getPassword(), optionalUser.get().getPassword())) {
+            var user = optionalUser.get();
             return Response.builder()
-                    .code(HttpStatus.OK.value())
-                    .data(new LoginResponse(JWTService.genToken(userResponse)))
-                    .message("Success").build();
+                            .code(HttpStatus.OK.value())
+                    .data(new LoginResponse(JWTService.genToken(userResponseMapper.toDTO(user))))
+                            .build();
         }
+        return Response.builder().code(HttpStatus.NOT_FOUND.value()).data("").message("Wrong username or password").build();
     }
 
 }

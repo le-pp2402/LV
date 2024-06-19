@@ -35,16 +35,23 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
                                             HttpServletResponse response,
                                             @RequestBody @Valid UpdatePasswordRequest updatePasswordRequest,
                                             BindingResult bindingResult) {
+        var token = request.getHeader("Authorization").substring(7);
+
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
             return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data("invalid password").build());
         } else {
             try {
                 String oldToken = request.getHeader("Authorization").substring(7);
-                response.addCookie(new Cookie("token", JWTService.refreshToken(oldToken)));
-                return ResponseEntity.ok(userService.updateUserInfo(request.getHeader("Authorization").substring(7),
-                        updatePasswordRequest.getOldPassword(),
-                        updatePasswordRequest.getNewPassword()));
+                response.addCookie(new Cookie("token", JWTService.refreshToken(token)));
+                return ResponseEntity.ok(
+                        userService.updateUserInfo(
+                                token,
+                                updatePasswordRequest.getOldPassword(),
+                                updatePasswordRequest.getNewPassword()
+                        )
+                );
+
             } catch (Exception e) {
                 return ResponseEntity.ok(e.getMessage());
             }
