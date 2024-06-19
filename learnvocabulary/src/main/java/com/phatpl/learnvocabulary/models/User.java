@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Getter
@@ -33,19 +34,22 @@ public class User implements BaseModel {
     @Builder.Default
     Boolean actived = false;
     Integer code;
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Resource> resource;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
-    List<UserGroup> userGroup;
+//    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    List<UserGroup> userGroup;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<UserWord> userWord;
 
-    @OneToMany(mappedBy = "user1")
+    @OneToMany(mappedBy = "user1", fetch = FetchType.LAZY)
     List<History> histories;
 
-    @OneToMany(mappedBy = "user1")
+    @OneToMany(mappedBy = "user1", fetch = FetchType.LAZY)
     List<Friend> friends;
+
+    @ManyToMany()
+    List<Group> groups;
 
 }

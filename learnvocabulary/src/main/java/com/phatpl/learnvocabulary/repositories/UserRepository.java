@@ -9,11 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Component
 public interface UserRepository extends BaseRepository<User, UserFilter, Integer> {
-    List<User> findByUsername(String username);
-    List<User> findByEmail(String email);
-    Optional<User> findOneByEmail(String email);
-    Optional<User> findOneByUsername(String username);
+    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
     Optional<User> findById(Integer id);
 }

@@ -1,52 +1,74 @@
 package com.phatpl.learnvocabulary.services;
 
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
-import com.phatpl.learnvocabulary.utils.Logger;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class JWTService {
 
-    private static final String SecretKey = "CoickW+pfQ+aKlH016EotzHYff2qUtGKN+UtQ3ETWjc=";
-    private static final Long EXPIRATION_TIME = 1000L;
-            // 3 * 24 * 60 * 60 * 1000L;
+    private final String secretKey = "BB4F994CF6B35773CA792F3911E4F";
+    private final Long expirationTime = 3 * 24 * 60 * 60 * 1000L;
 
-    public static String genToken(UserResponse userResponse) {
-        long current = System.currentTimeMillis();
-        String token = Jwts.builder().setIssuer("learnvocabulary")
-                .claim("data", userResponse)
-                .setSubject(userResponse.getUsername())
-                .setIssuedAt(new Date(current))
-                .setExpiration(new Date(current + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SecretKey)
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+    }
+
+    public <T> T extractClaims(String token, Function<Claims, T> claimResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimResolver.apply(claims);
+    }
+
+    // subject = username
+    public String getUsername(String token) {
+        return extractClaims(token, Claims::getSubject);
+    }
+
+    public Date getExpirationTime(String token) {
+        return extractClaims(token, Claims::getExpiration);
+    }
+
+
+    public Boolean isExpired(String token) {
+        return getExpirationTime(token).before(new Date());
+    }
+
+    public Boolean isValid(String token, UserDetails userDetails) {
+        final var username = getUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isExpired(token));
+    }
+
+
+    public Key getKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String createToken(HashMap<String, Object> extraClaims, UserDetails userDetails) {
+        return Jwts.builder().setIssuer("learnvocabulary")
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SignatureAlgorithm.HS256, getKey())
                 .compact();
-        Logger.log(Logger.GREEN + "TOKEN = " + token + Logger.RESET);
-        return token;
     }
 
-
-    public static Jws<Claims> verifyToken(String token) {
-        try {
-            return Jwts.parser().setSigningKey(SecretKey).parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Login session expired");
-        } catch (Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
+    public String genDefaultUserToken(UserResponse userResponse, UserDetails userDetails) {
+        HashMap<String, Object> extraClaims = new HashMap<String, Object>();
+        extraClaims.put("id", userResponse.getId());
+        extraClaims.put("email", userResponse.getEmail());
+        extraClaims.put("is_admin", userResponse.getIsAdmin());
+        extraClaims.put("elo", userResponse.getElo());
+        return createToken(extraClaims, userDetails);
     }
 
-    public static String refreshToken(String oldToken) {
-        long current = System.currentTimeMillis();
-        var data = (Map<String, Object>) verifyToken(oldToken).getBody().get("data");
-        String newToken = Jwts.builder().setIssuer("learnvocabulary")
-                .claim("data", data)
-                .setSubject((String) data.get("username"))
-                .setIssuedAt(new Date(current))
-                .setExpiration(new Date(current + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SecretKey)
-                .compact();
-        return newToken;
-    }
 }

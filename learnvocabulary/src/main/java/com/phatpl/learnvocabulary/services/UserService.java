@@ -48,7 +48,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
 
     public Response me(String token) {
         try {
-            var body = JWTService.verifyToken(token).getBody();
+            if (JWTService.isValid(token, ))
             Map<String, Object> obj = (Map<String, Object>) body.get("data");
             User user = userRepository.findById((Integer)obj.get("id")).get();
             return Response.builder()
@@ -75,8 +75,8 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
 
     public Response updateUserInfo(String token, String oldPassword, String newPassword) {
         try {
-            var body = JWTService.verifyToken(token).getBody();
-
+            JWTService.isValid(token);
+            var body = JWTService.isValid(token).getBody();
             Map<String, Object> obj = (Map<String, Object>) body.get("data");
             var user = userRepository.findOneByUsername((String)obj.get("username")).get();
             if (BCryptPassword.matches(oldPassword, user.getPassword())) {
