@@ -25,19 +25,19 @@ public class BaseController <E extends BaseModel, DTO extends BaseDTO, FT extend
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") Integer id) {
+    public ResponseEntity findById(@PathVariable("id") Integer id) {
         Logger.log("ok");
         DTO response = service.findById(id);
-        if (service != null) {
-            return ResponseEntity.ok(Response.builder().code(HttpStatus.OK.value()).data(response).message("Success").build());
+        if (response != null) {
+            return Response.ok(response);
         }
-        return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_FOUND.value()).data("NOT FOUND").message("Failed").build());
+        return Response.notFound(response);
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity findAll() {
         List<DTO> lst = service.findAll();
-        return ResponseEntity.ok(Response.builder().code(HttpStatus.OK.value()).data(lst).message("Success").build());
+        return Response.ok(lst);
     }
 
 }

@@ -21,8 +21,8 @@ public class LoginController {
     }
 
     @GetMapping
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        Response response = authService.login(loginRequest);
-        return ResponseEntity.ok(response);
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
+        Object response = authService.login(loginRequest);
+        return Response.ok(response);
     }
 }
