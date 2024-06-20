@@ -1,30 +1,67 @@
 package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.dtos.Response;
-import com.phatpl.learnvocabulary.dtos.request.AuthRequest;
+import com.phatpl.learnvocabulary.dtos.request.UpdatePasswordRequest;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.models.User;
+import com.phatpl.learnvocabulary.services.JWTService;
 import com.phatpl.learnvocabulary.services.UserService;
-import jakarta.validation.constraints.NotNull;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController extends BaseController<User, UserResponse, UserFilter, Integer> {
 
-    private final UserService userSev;
+    private final UserService userService;
 
-    public UserController(UserService userSev) {
-        super(userSev);
-        this.userSev = userSev;
+    public UserController(UserService userService) {
+        super(userService);
+        this.userService = userService;
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateUserInfo(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            @RequestBody @Valid UpdatePasswordRequest updatePasswordRequest,
+                                            BindingResult bindingResult) {
+        var token = request.getHeader("Authorization").substring(7);
+
+        if (bindingResult.hasErrors()) {
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data("invalid password").build());
+        } else {
+            try {
+                String oldToken = request.getHeader("Authorization").substring(7);
+                response.addCookie(new Cookie("token", JWTService.refreshToken(token)));
+                return ResponseEntity.ok(
+                        userService.updateUserInfo(
+                                token,
+                                updatePasswordRequest.getOldPassword(),
+                                updatePasswordRequest.getNewPassword()
+                        )
+                );
+
+            } catch (Exception e) {
+                return ResponseEntity.ok(e.getMessage());
+            }
+        }
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> me(@NotNull @RequestBody AuthRequest request) {
-        Response response = userSev.me(request.getToken());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> getUserInfo(HttpServletRequest request, HttpServletResponse response) {
+        var token = request.getHeader("Authorization").substring(7);
+        return ResponseEntity.ok(userService.me(token));
     }
 
 }

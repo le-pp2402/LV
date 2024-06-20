@@ -2,6 +2,7 @@ package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
+import com.phatpl.learnvocabulary.dtos.request.VerifyEmailRequest;
 import com.phatpl.learnvocabulary.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class RegisterController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
+    @PostMapping
     public ResponseEntity<Response> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
@@ -37,5 +38,9 @@ public class RegisterController {
         }
     }
 
+    @PutMapping("/verify")
+    public ResponseEntity<?> verify(@RequestBody VerifyEmailRequest request) {
+        return ResponseEntity.ok(userService.activeUser(request.getMail(), request.getCode()));
+    }
 
 }

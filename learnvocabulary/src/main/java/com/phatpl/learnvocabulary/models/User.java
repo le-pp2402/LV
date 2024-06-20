@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-
 @Getter
 @Setter
 @Entity
@@ -19,31 +18,28 @@ public class User implements BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
+
     @Column(length = 50, nullable = false)
     String username;
+
     @Column(length = 200, nullable = false)
     String password;
-    @Column(nullable = false)
+
+    @Column(nullable = false, length = 100)
     String email;
+
     @Builder.Default
     @Column(updatable = false)
     Boolean isAdmin = false;
+
     @Builder.Default
     Integer elo = 0;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
-    List<Resource> resource;
+    @Builder.Default
+    Boolean actived = false;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
-    List<UserGroup> userGroup;
+    Integer code;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<UserWord> userWord;
-
-    @OneToMany(mappedBy = "user1")
-    List<History> histories;
-
-    @OneToMany(mappedBy = "user1")
-    List<Friend> friends;
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<UserGroup> userGroups;
 }
