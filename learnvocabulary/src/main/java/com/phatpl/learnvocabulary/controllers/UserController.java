@@ -24,14 +24,15 @@ import java.util.List;
 public class UserController extends BaseController<User, UserResponse, UserFilter, Integer> {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
+    private final JWTService jwtService;
+    public UserController(UserService userService, JWTService jwtService) {
         super(userService);
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @PutMapping("/me")
-    public ResponseEntity<?> updateUserInfo(HttpServletRequest request,
+    public ResponseEntity updateUserInfo(HttpServletRequest request,
                                             HttpServletResponse response,
                                             @RequestBody @Valid UpdatePasswordRequest updatePasswordRequest,
                                             BindingResult bindingResult) {
@@ -39,29 +40,35 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
 
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
-            return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data("invalid password").build());
+            return Response.unauthorized(errors.get(0).getDefaultMessage());
         } else {
             try {
                 String oldToken = request.getHeader("Authorization").substring(7);
-                response.addCookie(new Cookie("token", JWTService.refreshToken(token)));
-                return ResponseEntity.ok(
-                        userService.updateUserInfo(
-                                token,
-                                updatePasswordRequest.getOldPassword(),
-                                updatePasswordRequest.getNewPassword()
-                        )
+                response.addCookie(new Cookie("token", jwtService.refreshToken(token)));
+                return
+                        Response.ok(
+                                userService.updateUserInfo(
+                                    token,
+                                    updatePasswordRequest.getOldPassword(),
+                                    updatePasswordRequest.getNewPassword()
+                                )
                 );
-
             } catch (Exception e) {
-                return ResponseEntity.ok(e.getMessage());
+                return Response.badRequest(e.getMessage());
             }
         }
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUserInfo(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity getUserInfo(HttpServletRequest request) {
         var token = request.getHeader("Authorization").substring(7);
-        return ResponseEntity.ok(userService.me(token));
+        try {
+            Object response = userService.me(token);
+            if (response == null) return Response.notFound(response);
+            return Response.ok(response);
+        } catch (RuntimeException e) {
+            return Response.badRequest(e.getMessage());
+        }
     }
 
 }

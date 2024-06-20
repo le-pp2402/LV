@@ -17,9 +17,9 @@ public class Friend implements BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     @Column(name = "user_1_id", insertable = false, updatable = false)
-    Integer idUser1;
+    Integer user1Id;
     @Column(name = "user_2_id", insertable = false, updatable = false)
-    Integer idUser2;
+    Integer user2Id;
     Boolean status;
 
     @ManyToOne

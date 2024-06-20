@@ -1,6 +1,5 @@
 package com.phatpl.learnvocabulary.services;
 
-import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.filters.UserFilter;
@@ -11,7 +10,6 @@ import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.MailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,18 +18,20 @@ import java.util.Map;
 public class UserService extends BaseService<User, UserResponse, UserFilter, Integer> {
     private final UserRepository userRepository;
     private final MailService mailService;
+    private final JWTService jwtService;
     @Autowired
-    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService) {
+    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService, JWTService jwtService) {
         super(userResponseMapper, userRepository);
         this.userRepository = userRepository;
         this.mailService = mailService;
+        this.jwtService = jwtService;
     }
 
     public UserResponse register(RegisterRequest request) throws RuntimeException {
-        if (!userRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email exists");
         }
-        if (!userRepository.findByUsername(request.getUsername()).isPresent()) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username exists");
         }
         User user = RegisterRequestMapper.instance.toEntity(request);
@@ -46,48 +46,33 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         return UserResponseMapper.instance.toDTO(userOpt.get());
     }
 
-    public Response me(String token) {
-        try {
-            var body = JWTService.verifyToken(token).getBody();
-            Map<String, Object> obj = (Map<String, Object>) body.get("data");
-            User user = userRepository.findById((Integer)obj.get("id")).get();
-            return Response.builder()
-                    .code(HttpStatus.OK.value())
-                    .data(UserResponseMapper.instance.toDTO(user))
-                    .build();
-        } catch (RuntimeException e) {
-            return Response.builder()
-                    .code(HttpStatus.UNAUTHORIZED.value())
-                    .data(e.getMessage())
-                    .build();
-        }
+    public Object me(String token) throws RuntimeException {
+        var body = jwtService.verifyToken(token).getBody();
+        Map<String, Object> obj = (Map<String, Object>) body.get("data");
+        User user = userRepository.findById((Integer)obj.get("id")).get();
+        return UserResponseMapper.instance.toDTO(user);
     }
 
-    public Response activeUser(String userMail, Integer code) {
+    public String activeUser(String userMail, Integer code) {
         var optUser = userRepository.findByEmail(userMail);
         if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
             var user = optUser.get();
             user.setActived(true);
             userRepository.save(user);
-            return Response.builder().code(HttpStatus.OK.value()).message("Active successful").build();
+            return "Active successful";
         }
-        return Response.builder().code(HttpStatus.NOT_FOUND.value()).message("Invalid code").build();
+        return "Invalid code";
     }
 
-    public Response updateUserInfo(String token, String oldPassword, String newPassword) {
-        try {
-            var body = JWTService.verifyToken(token).getBody();
-            Map<String, Object> obj = (Map<String, Object>) body.get("data");
-            var user = userRepository.findByUsername((String)obj.get("username")).get();
-            if (BCryptPassword.matches(oldPassword, user.getPassword())) {
-                user.setPassword(BCryptPassword.encode(newPassword));
-                userRepository.save(user);
-            } else {
-                return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message("Wrong password").build();
-            }
-        } catch (RuntimeException e) {
-            return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message(e.getMessage()).build();
+    public Object updateUserInfo(String token, String oldPassword, String newPassword) throws RuntimeException {
+        var body = jwtService.verifyToken(token).getBody();
+        Map<String, Object> obj = (Map<String, Object>) body.get("data");
+        var user = userRepository.findByUsername((String)obj.get("username")).get();
+        if (BCryptPassword.matches(oldPassword, user.getPassword())) {
+            user.setPassword(BCryptPassword.encode(newPassword));
+        } else {
+            return "Wrong password";
         }
-        return Response.builder().code(HttpStatus.OK.value()).data("").message("update successful").build();
+        return userRepository.save(user);
     }
 }
