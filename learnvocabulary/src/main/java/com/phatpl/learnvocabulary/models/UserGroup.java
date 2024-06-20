@@ -16,17 +16,15 @@ public class UserGroup implements BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
-    @Column(name = "user_id")
-    Integer userId;
-    @Column(name = "group_id")
-    Integer groupId;
-    Boolean isOwner;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    User user;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "group_id")
-//    Group group;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    User user;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    Group group;
+
+    @Builder.Default
+    Boolean isOwner = false;
 }

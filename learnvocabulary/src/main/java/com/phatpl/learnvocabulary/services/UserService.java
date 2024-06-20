@@ -28,10 +28,10 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     }
 
     public UserResponse register(RegisterRequest request) throws RuntimeException {
-        if (!userRepository.findOneByEmail(request.getEmail()).isPresent()) {
+        if (!userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email exists");
         }
-        if (!userRepository.findOneByUsername(request.getUsername()).isPresent()) {
+        if (!userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username exists");
         }
         User user = RegisterRequestMapper.instance.toEntity(request);
@@ -43,7 +43,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         mailService.sendEmail(MailUtil.genMail(user.getEmail(), user.getCode()));
 
         var userOpt = userRepository.findByUsername(user.getUsername());
-        return UserResponseMapper.instance.toDTO(userOpt.get(0));
+        return UserResponseMapper.instance.toDTO(userOpt.get());
     }
 
     public Response me(String token) {
@@ -64,21 +64,21 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     }
 
     public Response activeUser(String userMail, Integer code) {
-        var users = userRepository.findByEmail(userMail);
-        if (users.isEmpty() || users.get(0).getCode().equals(code)) {
-            return Response.builder().code(HttpStatus.NOT_FOUND.value()).message("Invalid code").build();
+        var optUser = userRepository.findByEmail(userMail);
+        if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
+            var user = optUser.get();
+            user.setActived(true);
+            userRepository.save(user);
+            return Response.builder().code(HttpStatus.OK.value()).message("Active successful").build();
         }
-        users.get(0).setActived(true);
-        userRepository.save(users.get(0));
-        return Response.builder().code(HttpStatus.OK.value()).message("Active successful").build();
+        return Response.builder().code(HttpStatus.NOT_FOUND.value()).message("Invalid code").build();
     }
 
     public Response updateUserInfo(String token, String oldPassword, String newPassword) {
         try {
             var body = JWTService.verifyToken(token).getBody();
-
             Map<String, Object> obj = (Map<String, Object>) body.get("data");
-            var user = userRepository.findOneByUsername((String)obj.get("username")).get();
+            var user = userRepository.findByUsername((String)obj.get("username")).get();
             if (BCryptPassword.matches(oldPassword, user.getPassword())) {
                 user.setPassword(BCryptPassword.encode(newPassword));
                 userRepository.save(user);
