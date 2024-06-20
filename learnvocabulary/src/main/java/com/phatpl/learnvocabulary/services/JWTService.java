@@ -3,10 +3,12 @@ package com.phatpl.learnvocabulary.services;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.utils.Logger;
 import io.jsonwebtoken.*;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Map;
 
+@Service
 public class JWTService {
 
     private static final String SecretKey = "CoickW+pfQ+aKlH016EotzHYff2qUtGKN+UtQ3ETWjc=";

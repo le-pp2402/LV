@@ -1,6 +1,7 @@
 package com.phatpl.learnvocabulary.controllers;
 
 
+import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.CreateGroupRequest;
 import com.phatpl.learnvocabulary.dtos.response.GroupResponse;
 import com.phatpl.learnvocabulary.filters.GroupFilter;
@@ -66,6 +67,16 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
         } catch (RuntimeException e) {
             e.printStackTrace();
             return ResponseEntity.ok(e.getMessage());
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity getGroupOfUser(HttpServletRequest request, GroupFilter groupFilter) {
+        var token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            return ResponseEntity.ok(groupService.getGroupWithFilter(token, groupFilter));
+        } else {
+            return ResponseEntity.ok(Response.builder().code(HttpStatus.UNAUTHORIZED.value()).data("").message("unauthorized"));
         }
     }
 }
