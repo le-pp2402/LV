@@ -1,6 +1,9 @@
 package com.phatpl.learnvocabulary.mappers;
 
 
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+
 import java.util.List;
 
 public interface BaseMapper<E, DTO> {
