@@ -1,7 +1,6 @@
 package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.dtos.BaseDTO;
-import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.models.BaseModel;
 import com.phatpl.learnvocabulary.services.BaseService;

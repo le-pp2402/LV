@@ -3,7 +3,6 @@ package com.phatpl.learnvocabulary.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Getter
 @Setter

@@ -1,10 +1,5 @@
 package com.phatpl.learnvocabulary.services;
 
-import com.phatpl.learnvocabulary.dtos.response.UserResponse;
-import com.phatpl.learnvocabulary.filters.UserFilter;
-import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
-import com.phatpl.learnvocabulary.models.User;
-import com.phatpl.learnvocabulary.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

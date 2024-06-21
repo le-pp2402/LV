@@ -1,7 +1,6 @@
 package com.phatpl.learnvocabulary.controllers;
 
 
-import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.LoginRequest;
 import com.phatpl.learnvocabulary.services.AuthService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
