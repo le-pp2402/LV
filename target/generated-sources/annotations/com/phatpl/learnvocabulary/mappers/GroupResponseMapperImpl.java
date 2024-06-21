@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-06-21T07:24:27+0700",
+    date = "2024-06-21T03:00:56+0700",
     comments = "version: 1.6.0.Beta2, compiler: javac, environment: Java 17.0.10 (Oracle Corporation)"
 )
 @Component
@@ -42,8 +42,8 @@ public class GroupResponseMapperImpl implements GroupResponseMapper {
 
         group.id( dto.getId() );
         group.name( dto.getName() );
-        group.updatedAt( dto.getUpdatedAt() );
         group.createdAt( dto.getCreatedAt() );
+        group.updatedAt( dto.getUpdatedAt() );
         group.isPrivate( dto.getIsPrivate() );
 
         return group.build();
