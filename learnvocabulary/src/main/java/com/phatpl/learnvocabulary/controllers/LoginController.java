@@ -1,9 +1,9 @@
 package com.phatpl.learnvocabulary.controllers;
 
 
-import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.LoginRequest;
 import com.phatpl.learnvocabulary.services.AuthService;
+import com.phatpl.learnvocabulary.utils.BuildResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +21,11 @@ public class LoginController {
     }
 
     @GetMapping
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
         try {
-            Object obj = authService.login(loginRequest);
-            return Response.ok(obj);
-        } catch (RuntimeException e) {
-            return Response.notFound(e.getMessage());
+            return BuildResponse.ok(authService.login(loginRequest));
+        } catch (Exception e) {
+            return BuildResponse.badRequest(e.getMessage());
         }
     }
 }

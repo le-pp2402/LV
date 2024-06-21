@@ -1,72 +1,58 @@
 package com.phatpl.learnvocabulary.services;
 
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
-import com.phatpl.learnvocabulary.models.User;
+import com.phatpl.learnvocabulary.utils.Logger;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import jakarta.validation.Payload;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.function.Function;
+import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
+@Getter
 public class JWTService {
 
-    private final String secretKey = "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij";
-    private final Long expirationTime = 3 * 24 * 60 * 60 * 1000L;
+    @Value("${SECRET_KEY}")
+    private String SecretKey;
+    @Value("${EXPIRATION_TIME}")
+    private Long EXPIRATION_TIME;
 
-    public Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-    }
-
-    public <T> T extractClaims(String token, Function<Claims, T> claimResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimResolver.apply(claims);
-    }
-
-    // subject = username
-    public String getUsername(String token) {
-        return extractClaims(token, Claims::getSubject);
-    }
-
-    public Date getExpirationTime(String token) {
-        return extractClaims(token, Claims::getExpiration);
-    }
-
-
-    public Boolean isExpired(String token) {
-        return getExpirationTime(token).before(new Date());
-    }
-
-    public Boolean isValid(String token, User user) {
-        final var username = getUsername(token);
-        return (username.equals(user.getUsername()) && !isExpired(token));
-    }
-
-
-    public Key getKey() {
-//        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
-
-    public String createToken(UserResponse userResponse) {
-        return Jwts.builder().setIssuer("learnvocabulary")
+    public String genToken(UserResponse userResponse) {
+        long current = System.currentTimeMillis();
+        String token = Jwts.builder().setIssuer("learnvocabulary")
+                .claim("data", userResponse)
                 .setSubject(userResponse.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(SignatureAlgorithm.HS256, getKey())
-                .claim("scope", getScope(userResponse))
+                .setIssuedAt(new Date(current))
+                .setExpiration(new Date(current + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS256, getSecretKey())
                 .compact();
+        Logger.log(Logger.GREEN + "TOKEN = " + token + Logger.RESET);
+        return token;
     }
 
-    private String getScope(UserResponse userResponse) {
-        return (userResponse.getIsAdmin() == true ? "USER ADMIN" : "USER");
+
+    public Jws<Claims> verifyToken(String token) {
+        try {
+            return Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("Login session expired");
+        } catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public String refreshToken(String oldToken) {
+        long current = System.currentTimeMillis();
+        var data = (Map<String, Object>) verifyToken(oldToken).getBody().get("data");
+        String newToken = Jwts.builder().setIssuer("learnvocabulary")
+                .claim("data", data)
+                .setSubject((String) data.get("username"))
+                .setIssuedAt(new Date(current))
+                .setExpiration(new Date(current + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS256, SecretKey)
+                .compact();
+        return newToken;
     }
 }

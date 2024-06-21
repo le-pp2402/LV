@@ -4,6 +4,7 @@ import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
 import com.phatpl.learnvocabulary.dtos.request.VerifyEmailRequest;
 import com.phatpl.learnvocabulary.services.UserService;
+import com.phatpl.learnvocabulary.utils.BuildResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,16 +29,26 @@ public class RegisterController {
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
-            return Response.badRequest(errors.get(0).getDefaultMessage());
+            return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data("ERROR").build());
         } else {
             try {
-                return Response.created(userService.register(request));
+                var obj = userService.register(request);
+                return BuildResponse.created(obj);
             } catch (Exception e) {
-                return Response.badRequest(e.getMessage());
+                return BuildResponse.badRequest(e.getMessage());
             }
         }
     }
 
-
+    @PutMapping("/verify")
+    public ResponseEntity<?> verify(@RequestBody VerifyEmailRequest request) {
+        try {
+            return BuildResponse.ok(
+                        userService.activeUser(request.getMail(), request.getCode())
+            );
+        } catch (Exception e) {
+            return BuildResponse.badRequest(e.getMessage());
+        }
+    }
 
 }

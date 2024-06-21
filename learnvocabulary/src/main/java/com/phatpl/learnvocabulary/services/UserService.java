@@ -37,7 +37,6 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         User user = RegisterRequestMapper.instance.toEntity(request);
         user.setPassword(BCryptPassword.encode(user.getPassword()));
         user.setCode(MailUtil.genCode());
-        user.setIsAdmin(false);
 
         userRepository.save(user);
 
@@ -47,20 +46,32 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         return UserResponseMapper.instance.toDTO(userOpt.get());
     }
 
-    public Object me(String token) throws RuntimeException {
-        return null;
+    public UserResponse me(String token) throws Exception {
+        var body = jwtService.verifyToken(token).getBody();
+        Map<String, Object> obj = (Map<String, Object>) body.get("data");
+        User user = userRepository.findById((Integer)obj.get("id")).get();
+        return UserResponseMapper.instance.toDTO(user);
     }
 
-    public String activeUser(String userMail, Integer code) {
+    public UserResponse activeUser(String userMail, Integer code) throws Exception {
         var optUser = userRepository.findByEmail(userMail);
         if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
             var user = optUser.get();
-            user.setActived(true);
-            userRepository.save(user);
-            return "Active successful";
+            user.setActivated(true);
+            return UserResponseMapper.instance.toDTO(userRepository.save(user));
         }
-        return "Invalid code";
+        throw new RuntimeException("wrong code");
     }
 
-
+    public UserResponse updateUserInfo(String token, String oldPassword, String newPassword) throws RuntimeException {
+        var body = jwtService.verifyToken(token).getBody();
+        Map<String, Object> obj = (Map<String, Object>) body.get("data");
+        var user = userRepository.findByUsername((String)obj.get("username")).get();
+        if (BCryptPassword.matches(oldPassword, user.getPassword())) {
+            user.setPassword(BCryptPassword.encode(newPassword));
+        } else {
+            throw new RuntimeException("wrong password");
+        }
+        return UserResponseMapper.instance.toDTO(userRepository.save(user));
+    }
 }

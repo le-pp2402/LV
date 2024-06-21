@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-06-21T07:24:27+0700",
+    date = "2024-06-21T14:49:51+0700",
     comments = "version: 1.6.0.Beta2, compiler: javac, environment: Java 17.0.10 (Oracle Corporation)"
 )
 @Component
@@ -23,6 +23,9 @@ public class GroupRequestMapperImpl implements GroupRequestMapper {
 
         CreateGroupRequest createGroupRequest = new CreateGroupRequest();
 
+        createGroupRequest.setId( entity.getId() );
+        createGroupRequest.setCreatedAt( entity.getCreatedAt() );
+        createGroupRequest.setUpdatedAt( entity.getUpdatedAt() );
         createGroupRequest.setName( entity.getName() );
 
         return createGroupRequest;
@@ -34,11 +37,14 @@ public class GroupRequestMapperImpl implements GroupRequestMapper {
             return null;
         }
 
-        Group.GroupBuilder group = Group.builder();
+        Group group = new Group();
 
-        group.name( dto.getName() );
+        group.setId( dto.getId() );
+        group.setCreatedAt( dto.getCreatedAt() );
+        group.setUpdatedAt( dto.getUpdatedAt() );
+        group.setName( dto.getName() );
 
-        return group.build();
+        return group;
     }
 
     @Override

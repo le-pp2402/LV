@@ -1,6 +1,6 @@
 package com.phatpl.learnvocabulary.mappers;
 
-import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
+import com.phatpl.learnvocabulary.dtos.response.LoginResponse;
 import com.phatpl.learnvocabulary.models.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,28 +13,29 @@ import org.springframework.stereotype.Component;
     comments = "version: 1.6.0.Beta2, compiler: javac, environment: Java 17.0.10 (Oracle Corporation)"
 )
 @Component
-public class RegisterRequestMapperImpl implements RegisterRequestMapper {
+public class LoginResponseMapperImpl implements LoginResponseMapper {
 
     @Override
-    public RegisterRequest toDTO(User entity) {
+    public LoginResponse toDTO(User entity) {
         if ( entity == null ) {
             return null;
         }
 
-        RegisterRequest registerRequest = new RegisterRequest();
+        LoginResponse loginResponse = new LoginResponse();
 
-        registerRequest.setId( entity.getId() );
-        registerRequest.setCreatedAt( entity.getCreatedAt() );
-        registerRequest.setUpdatedAt( entity.getUpdatedAt() );
-        registerRequest.setUsername( entity.getUsername() );
-        registerRequest.setPassword( entity.getPassword() );
-        registerRequest.setEmail( entity.getEmail() );
+        loginResponse.setId( entity.getId() );
+        loginResponse.setCreatedAt( entity.getCreatedAt() );
+        loginResponse.setUpdatedAt( entity.getUpdatedAt() );
+        loginResponse.setUsername( entity.getUsername() );
+        loginResponse.setEmail( entity.getEmail() );
+        loginResponse.setIsAdmin( entity.getIsAdmin() );
+        loginResponse.setElo( entity.getElo() );
 
-        return registerRequest;
+        return loginResponse;
     }
 
     @Override
-    public User toEntity(RegisterRequest dto) {
+    public User toEntity(LoginResponse dto) {
         if ( dto == null ) {
             return null;
         }
@@ -45,19 +46,20 @@ public class RegisterRequestMapperImpl implements RegisterRequestMapper {
         user.setCreatedAt( dto.getCreatedAt() );
         user.setUpdatedAt( dto.getUpdatedAt() );
         user.setUsername( dto.getUsername() );
-        user.setPassword( dto.getPassword() );
         user.setEmail( dto.getEmail() );
+        user.setIsAdmin( dto.getIsAdmin() );
+        user.setElo( dto.getElo() );
 
         return user;
     }
 
     @Override
-    public List<RegisterRequest> toListDTO(List<User> e) {
+    public List<LoginResponse> toListDTO(List<User> e) {
         if ( e == null ) {
             return null;
         }
 
-        List<RegisterRequest> list = new ArrayList<RegisterRequest>( e.size() );
+        List<LoginResponse> list = new ArrayList<LoginResponse>( e.size() );
         for ( User user : e ) {
             list.add( toDTO( user ) );
         }
@@ -66,14 +68,14 @@ public class RegisterRequestMapperImpl implements RegisterRequestMapper {
     }
 
     @Override
-    public List<User> toListEntity(List<RegisterRequest> dto) {
+    public List<User> toListEntity(List<LoginResponse> dto) {
         if ( dto == null ) {
             return null;
         }
 
         List<User> list = new ArrayList<User>( dto.size() );
-        for ( RegisterRequest registerRequest : dto ) {
-            list.add( toEntity( registerRequest ) );
+        for ( LoginResponse loginResponse : dto ) {
+            list.add( toEntity( loginResponse ) );
         }
 
         return list;

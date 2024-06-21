@@ -4,17 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
-
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "histories")
-public class History implements BaseModel {
+public class History extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
@@ -26,7 +23,6 @@ public class History implements BaseModel {
     Integer pointPlayer1;
     @Column(name = "player_2_score")
     Integer pointPlayer2;
-    Date createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_1_id")
