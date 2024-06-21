@@ -1,6 +1,9 @@
 package com.phatpl.learnvocabulary.services;
 
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
+import com.phatpl.learnvocabulary.exceptions.BadRequestException;
+import com.phatpl.learnvocabulary.exceptions.ExistedException;
+import com.phatpl.learnvocabulary.exceptions.ExpiredException;
 import com.phatpl.learnvocabulary.utils.Logger;
 import io.jsonwebtoken.*;
 import lombok.Getter;
@@ -37,9 +40,9 @@ public class JWTService {
         try {
             return Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Login session expired");
+            throw new ExpiredException("token");
         } catch (Exception e){
-            throw new RuntimeException(e.getMessage());
+            throw new BadRequestException(e.getMessage());
         }
     }
 

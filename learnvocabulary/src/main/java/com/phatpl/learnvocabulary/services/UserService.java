@@ -2,6 +2,9 @@ package com.phatpl.learnvocabulary.services;
 
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
+import com.phatpl.learnvocabulary.exceptions.ExistedException;
+import com.phatpl.learnvocabulary.exceptions.WrongUsernameOrPassword;
+import com.phatpl.learnvocabulary.exceptions.WrongVerifyCode;
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.mappers.RegisterRequestMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
@@ -29,10 +32,10 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
 
     public UserResponse register(RegisterRequest request) throws RuntimeException {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email exists");
+            throw new ExistedException("email");
         }
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username exists");
+            throw new ExistedException("username");
         }
         User user = RegisterRequestMapper.instance.toEntity(request);
         user.setPassword(BCryptPassword.encode(user.getPassword()));
@@ -60,7 +63,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
             user.setActivated(true);
             return UserResponseMapper.instance.toDTO(userRepository.save(user));
         }
-        throw new RuntimeException("wrong code");
+        throw new WrongVerifyCode();
     }
 
     public UserResponse updateUserInfo(String token, String oldPassword, String newPassword) throws RuntimeException {
@@ -70,7 +73,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         if (BCryptPassword.matches(oldPassword, user.getPassword())) {
             user.setPassword(BCryptPassword.encode(newPassword));
         } else {
-            throw new RuntimeException("wrong password");
+            throw new WrongUsernameOrPassword();
         }
         return UserResponseMapper.instance.toDTO(userRepository.save(user));
     }
