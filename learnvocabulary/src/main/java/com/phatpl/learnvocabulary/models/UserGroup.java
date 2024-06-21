@@ -6,16 +6,12 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user_group")
-public class UserGroup implements BaseModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+public class UserGroup extends BaseModel {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -25,6 +21,5 @@ public class UserGroup implements BaseModel {
     @JoinColumn(name = "group_id", nullable = false)
     Group group;
 
-    @Builder.Default
     Boolean isOwner = false;
 }

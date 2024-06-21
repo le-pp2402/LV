@@ -11,25 +11,18 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "resources")
-public class Resource implements BaseModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+public class Resource extends BaseModel {
+
     @Column(nullable = false)
     String title;
     Integer userId;
     String source;
     String enSub;
     String viSub;
-    @CreatedDate
-    Date updatedAt;
-    @UpdateTimestamp(source = SourceType.DB)
-    Date createdAt;
     Boolean isPrivate;
 }

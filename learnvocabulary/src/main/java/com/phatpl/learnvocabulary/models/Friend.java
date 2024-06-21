@@ -6,16 +6,13 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "friends")
-public class Friend implements BaseModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+public class Friend extends BaseModel {
+
     @Column(name = "user_1_id", insertable = false, updatable = false)
     Integer user1Id;
     @Column(name = "user_2_id", insertable = false, updatable = false)

@@ -16,35 +16,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/register")
-public class RegisterController {
+@RequestMapping("/verify")
+public class VerifyController {
+
     private final UserService userService;
 
     @Autowired
-    public RegisterController(UserService userService) {
+    public VerifyController(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data("ERROR").build());
-        } else {
-            try {
-                var obj = userService.register(request);
-                return BuildResponse.created(obj);
-            } catch (Exception e) {
-                return BuildResponse.badRequest(e.getMessage());
-            }
-        }
-    }
-
-    @PutMapping("/verify")
+    @PutMapping
     public ResponseEntity<?> verify(@RequestBody VerifyEmailRequest request) {
         try {
             return BuildResponse.ok(
-                        userService.activeUser(request.getMail(), request.getCode())
+                    userService.activeUser(request.getMail(), request.getCode())
             );
         } catch (Exception e) {
             return BuildResponse.badRequest(e.getMessage());

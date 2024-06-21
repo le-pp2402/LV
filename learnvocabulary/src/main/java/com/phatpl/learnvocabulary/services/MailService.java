@@ -12,16 +12,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MailService extends BaseService<User , UserResponse, UserFilter, Integer> {
-    private JavaMailSender javaMailSender;
-    private UserRepository userRepository;
-    private UserResponseMapper userResponseMapper;
+public class MailService {
+    private final JavaMailSender javaMailSender;
 
     @Autowired
-    public MailService(UserResponseMapper userResponseMapper, UserRepository userRepository, JavaMailSender javaMailSender) {
-        super(userResponseMapper, userRepository);
-        this.userRepository = userRepository;
-        this.userResponseMapper = userResponseMapper;
+    public MailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 

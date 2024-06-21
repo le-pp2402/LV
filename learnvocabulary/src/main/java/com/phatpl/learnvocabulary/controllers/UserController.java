@@ -7,10 +7,12 @@ import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.services.JWTService;
 import com.phatpl.learnvocabulary.services.UserService;
+import com.phatpl.learnvocabulary.utils.BuildResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -40,13 +42,13 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
 
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
-            return Response.unauthorized(errors.get(0).getDefaultMessage());
+            return BuildResponse.unauthorized(errors.get(0).getDefaultMessage());
         } else {
             try {
                 String oldToken = request.getHeader("Authorization").substring(7);
                 response.addCookie(new Cookie("token", jwtService.refreshToken(token)));
                 return
-                        Response.ok(
+                        BuildResponse.ok(
                                 userService.updateUserInfo(
                                     token,
                                     updatePasswordRequest.getOldPassword(),
@@ -54,7 +56,7 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
                                 )
                 );
             } catch (Exception e) {
-                return Response.badRequest(e.getMessage());
+                return BuildResponse.badRequest(e.getMessage());
             }
         }
     }
@@ -63,11 +65,11 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
     public ResponseEntity getUserInfo(HttpServletRequest request) {
         var token = request.getHeader("Authorization").substring(7);
         try {
-            Object response = userService.me(token);
-            if (response == null) return Response.notFound(response);
-            return Response.ok(response);
-        } catch (RuntimeException e) {
-            return Response.badRequest(e.getMessage());
+            var response = userService.me(token);
+            if (response == null) return BuildResponse.notFound(response);
+            return BuildResponse.ok(response);
+        } catch (Exception e) {
+            return BuildResponse.badRequest(e.getMessage());
         }
     }
 

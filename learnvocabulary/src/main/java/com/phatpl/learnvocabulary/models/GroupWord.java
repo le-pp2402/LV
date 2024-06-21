@@ -6,16 +6,13 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "group_word")
-public class GroupWord implements BaseModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+public class GroupWord extends BaseModel {
+
     @Column(name = "group_id", insertable=false, updatable=false)
     Integer groupId;
     @Column(name = "word_id", insertable=false, updatable=false)

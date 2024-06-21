@@ -5,6 +5,7 @@ import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.models.BaseModel;
 import com.phatpl.learnvocabulary.services.BaseService;
+import com.phatpl.learnvocabulary.utils.BuildResponse;
 import com.phatpl.learnvocabulary.utils.Logger;
 import jakarta.persistence.MappedSuperclass;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +28,15 @@ public class BaseController <E extends BaseModel, DTO extends BaseDTO, FT extend
         Logger.log("ok");
         DTO response = service.findById(id);
         if (response != null) {
-            return Response.ok(response);
+            return BuildResponse.ok(response);
         }
-        return Response.notFound(response);
+        return BuildResponse.notFound(response);
     }
 
     @GetMapping
     public ResponseEntity findAll() {
         List<DTO> lst = service.findAll();
-        return Response.ok(lst);
+        return BuildResponse.ok(lst);
     }
 
 }

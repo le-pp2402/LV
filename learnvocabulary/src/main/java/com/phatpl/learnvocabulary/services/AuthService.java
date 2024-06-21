@@ -4,6 +4,7 @@ import com.phatpl.learnvocabulary.dtos.request.LoginRequest;
 import com.phatpl.learnvocabulary.dtos.response.LoginResponse;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.filters.UserFilter;
+import com.phatpl.learnvocabulary.mappers.LoginResponseMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
@@ -24,18 +25,19 @@ public class AuthService extends BaseService<User, UserResponse, UserFilter, Int
         this.jwtService = jwtService;
     }
 
-    public UserResponse getUserInfo() {
-        return UserResponse.builder().elo(0).username("user").id(0).email("").isAdmin(false).build();
-    }
 
-    public Object login(LoginRequest userLogin) {
+    public LoginResponse login(LoginRequest userLogin) throws Exception {
         var optionalUser = userRepository.findByUsername(userLogin.getUsername());
         if (optionalUser.isPresent() && BCryptPassword.matches(userLogin.getPassword(), optionalUser.get().getPassword())) {
             var user = optionalUser.get();
-            if (!user.getActived()) return "active account first";
-            return new LoginResponse(jwtService.genToken(userResponseMapper.toDTO(user)));
+            if (!user.getActivated())
+                throw  new RuntimeException("Tai khoan chua duoc kich hoat");
+            var loginResponse = LoginResponseMapper.instance.toDTO(user);
+            loginResponse.setToken(jwtService.genToken(userResponseMapper.toDTO(user)));
+            return loginResponse;
+        } else {
+            throw new RuntimeException("Wrong username or password");
         }
-        return "Wrong username or password";
     }
 
 }

@@ -11,26 +11,15 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "`groups`")
-public class Group implements BaseModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+public class Group extends BaseModel {
 
     String name;
 
-    @CreationTimestamp
-    Timestamp createdAt;
-
-    @UpdateTimestamp
-    Timestamp updatedAt;
-
-    @Builder.Default
     Boolean isPrivate = true;
 
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)

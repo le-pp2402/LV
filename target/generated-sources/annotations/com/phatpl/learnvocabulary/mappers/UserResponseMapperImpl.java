@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-06-21T04:55:44+0700",
+    date = "2024-06-21T14:49:51+0700",
     comments = "version: 1.6.0.Beta2, compiler: javac, environment: Java 17.0.10 (Oracle Corporation)"
 )
 @Component
@@ -21,15 +21,17 @@ public class UserResponseMapperImpl implements UserResponseMapper {
             return null;
         }
 
-        UserResponse.UserResponseBuilder userResponse = UserResponse.builder();
+        UserResponse userResponse = new UserResponse();
 
-        userResponse.id( entity.getId() );
-        userResponse.username( entity.getUsername() );
-        userResponse.email( entity.getEmail() );
-        userResponse.isAdmin( entity.getIsAdmin() );
-        userResponse.elo( entity.getElo() );
+        userResponse.setId( entity.getId() );
+        userResponse.setCreatedAt( entity.getCreatedAt() );
+        userResponse.setUpdatedAt( entity.getUpdatedAt() );
+        userResponse.setUsername( entity.getUsername() );
+        userResponse.setEmail( entity.getEmail() );
+        userResponse.setIsAdmin( entity.getIsAdmin() );
+        userResponse.setElo( entity.getElo() );
 
-        return userResponse.build();
+        return userResponse;
     }
 
     @Override
@@ -38,15 +40,17 @@ public class UserResponseMapperImpl implements UserResponseMapper {
             return null;
         }
 
-        User.UserBuilder user = User.builder();
+        User user = new User();
 
-        user.id( dto.getId() );
-        user.username( dto.getUsername() );
-        user.email( dto.getEmail() );
-        user.isAdmin( dto.getIsAdmin() );
-        user.elo( dto.getElo() );
+        user.setId( dto.getId() );
+        user.setCreatedAt( dto.getCreatedAt() );
+        user.setUpdatedAt( dto.getUpdatedAt() );
+        user.setUsername( dto.getUsername() );
+        user.setEmail( dto.getEmail() );
+        user.setIsAdmin( dto.getIsAdmin() );
+        user.setElo( dto.getElo() );
 
-        return user.build();
+        return user;
     }
 
     @Override
