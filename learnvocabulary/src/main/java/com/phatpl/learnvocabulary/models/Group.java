@@ -21,11 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "`groups`")
-public class Group implements BaseModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
-
+public class Group extends BaseModel {
     String name;
 
     @CreationTimestamp

@@ -7,6 +7,7 @@ import com.phatpl.learnvocabulary.dtos.request.UpdateGroupRequest;
 import com.phatpl.learnvocabulary.dtos.response.GroupResponse;
 import com.phatpl.learnvocabulary.filters.GroupFilter;
 import com.phatpl.learnvocabulary.mappers.GroupRequestMapper;
+import com.phatpl.learnvocabulary.mappers.UserGroupResponseMapper;
 import com.phatpl.learnvocabulary.models.Group;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.models.UserGroup;
@@ -15,6 +16,7 @@ import com.phatpl.learnvocabulary.repositories.UserGroupRepository;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.services.GroupService;
 import com.phatpl.learnvocabulary.services.JWTService;
+import com.phatpl.learnvocabulary.utils.BuildResponse;
 import com.phatpl.learnvocabulary.utils.Logger;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -66,10 +68,9 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
 
             Integer groupId = groupRepository.save(group).getId();
             userGroupRepository.save(userGroup);
-            return Response.ok(groupRepository.findById(groupId));
+            return BuildResponse.ok(groupRepository.findById(groupId));
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            return ResponseEntity.ok(e.getMessage());
+            return BuildResponse.ok(e.getMessage());
         }
     }
 
@@ -77,7 +78,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     public ResponseEntity updateGroupInfo(@NotNull @PathVariable("id") Integer id, @RequestBody UpdateGroupRequest updateGroupRequest) {
         // check authrization
         Logger.log(updateGroupRequest.toString());
-        return Response.ok(groupService.updateGroupInfo(id, updateGroupRequest));
+        return BuildResponse.ok(groupService.updateGroupInfo(id, updateGroupRequest));
     }
     @GetMapping("/me")
     public ResponseEntity getGroupOfUser(HttpServletRequest request, GroupFilter groupFilter) {
@@ -86,6 +87,6 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
         var body = jwtService.verifyToken(token).getBody();
         Map<String, Object> obj = (Map<String, Object>) body.get("data");
         User user = userRepository.findById((Integer)obj.get("id")).get();
-        return Response.ok(user.getUserGroups());
+        return BuildResponse.ok(UserGroupResponseMapper.instance.toListDTO(user.getUserGroups()));
     }
 }

@@ -14,10 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user_group")
-public class UserGroup implements BaseModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+public class UserGroup extends BaseModel {
 
     @Builder.Default
     Boolean isOwner = false;
