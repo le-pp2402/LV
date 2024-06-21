@@ -7,11 +7,13 @@ import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.services.JWTService;
 import com.phatpl.learnvocabulary.services.UserService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
+import com.phatpl.learnvocabulary.utils.Logger;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -59,15 +61,10 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
     }
 
     @GetMapping("/me")
-    public ResponseEntity getUserInfo(HttpServletRequest request) {
-        var token = request.getHeader("Authorization").substring(7);
-        try {
-            var response = userService.me(token);
-            if (response == null) return BuildResponse.notFound(response);
-            return BuildResponse.ok(response);
-        } catch (Exception e) {
-            return BuildResponse.badRequest(e.getMessage());
-        }
+    public ResponseEntity getUserInfo() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        Logger.log(auth.getAuthorities().stream().toString());
+        return null;
     }
 
 }
