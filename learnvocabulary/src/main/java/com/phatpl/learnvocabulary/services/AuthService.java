@@ -21,15 +21,13 @@ import org.springframework.stereotype.Service;
 public class AuthService extends BaseService<User, UserResponse, UserFilter, Integer> {
     private final UserRepository userRepository;
     private final UserResponseMapper userResponseMapper;
-    private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
 
     @Autowired
-    public AuthService(UserResponseMapper userResponseMapper, UserRepository userRepository, AuthenticationManager authenticationManager, JWTService jwtService) {
+    public AuthService(UserResponseMapper userResponseMapper, UserRepository userRepository, JWTService jwtService) {
         super(userResponseMapper, userRepository);
         this.userRepository = userRepository;
         this.userResponseMapper = userResponseMapper;
-        this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }
 
@@ -37,17 +35,13 @@ public class AuthService extends BaseService<User, UserResponse, UserFilter, Int
         return UserResponse.builder().elo(0).username("user").id(0).email("").isAdmin(false).build();
     }
 
-    public Response login(LoginRequest userLogin) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        userLogin.getUsername(),
-                        BCryptPassword.encode(userLogin.getPassword())
-                )
-        );
-        var user = userRepository.findByUsername(userLogin.getUsername()).orElseThrow(()-> new UsernameNotFoundException("wrong username"));
-        var userResponse = userResponseMapper.toDTO(user);
-        return Response.builder().data(
-                new LoginResponse(jwtService.genDefaultUserToken(userResponse, (UserDetails) user))
-        ).build();
+    public Object login(LoginRequest userLogin) {
+        var optionalUser = userRepository.findByUsername(userLogin.getUsername());
+        if (optionalUser.isPresent() && BCryptPassword.matches(userLogin.getPassword(), optionalUser.get().getPassword())) {
+            var user = optionalUser.get();
+            if (!user.getActived()) return "active account first";
+            return new LoginResponse(jwtService.createToken(UserResponseMapper.instance.toDTO(user)));
+        }
+        return "Wrong username or password";
     }
 }

@@ -24,6 +24,7 @@ public class BaseService<E extends BaseModel,
     }
 
     public List<DTO> findAll() {
+
         return baseMapper.toListDTO(repo.findAll());
     }
 

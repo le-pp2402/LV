@@ -7,10 +7,13 @@ import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.services.JWTService;
 import com.phatpl.learnvocabulary.services.UserService;
+import com.phatpl.learnvocabulary.utils.Logger;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +53,10 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
 
     @GetMapping("/me")
     public ResponseEntity<?> getUserInfo() {
-        return ResponseEntity.ok(userService.me());
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        Logger.log(auth.getName());
+        Logger.log(auth.getAuthorities().toString());
+        return null;
     }
 
 }

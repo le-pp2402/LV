@@ -1,6 +1,5 @@
 package com.phatpl.learnvocabulary.services;
 
-import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.filters.UserFilter;
@@ -11,10 +10,6 @@ import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.MailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -42,6 +37,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         User user = RegisterRequestMapper.instance.toEntity(request);
         user.setPassword(BCryptPassword.encode(user.getPassword()));
         user.setCode(MailUtil.genCode());
+        user.setIsAdmin(false);
 
         userRepository.save(user);
 
@@ -51,48 +47,20 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         return UserResponseMapper.instance.toDTO(userOpt.get());
     }
 
-    public Response me() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        try {
-//            var body = jwtService.extractAllClaims;
-//            User user = userRepository.findById((Integer)body.get("id")).get();
-            return Response.builder()
-                    .code(HttpStatus.OK.value())
-//                    .data(UserResponseMapper.instance.toDTO(user))
-                    .build();
-        } catch (RuntimeException e) {
-            return Response.builder()
-                    .code(HttpStatus.UNAUTHORIZED.value())
-                    .data(e.getMessage())
-                    .build();
-        }
+    public Object me(String token) throws RuntimeException {
+        return null;
     }
 
-    public Response activeUser(String userMail, Integer code) {
-        var users = userRepository.findByEmail(userMail);
-        if (users.isEmpty() || users.get().getCode().equals(code)) {
-            return Response.builder().code(HttpStatus.NOT_FOUND.value()).message("Invalid code").build();
+    public String activeUser(String userMail, Integer code) {
+        var optUser = userRepository.findByEmail(userMail);
+        if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
+            var user = optUser.get();
+            user.setActived(true);
+            userRepository.save(user);
+            return "Active successful";
         }
-        users.get().setActived(true);
-        userRepository.save(users.get());
-        return Response.builder().code(HttpStatus.OK.value()).message("Active successful").build();
+        return "Invalid code";
     }
 
-//    public Response updateUserInfo(String token, String oldPassword, String newPassword) {
-//        try {
-//            JWTService.isValid(token);
-//            var body = JWTService.isValid(token).getBody();
-//            Map<String, Object> obj = (Map<String, Object>) body.get("data");
-//            var user = userRepository.findOneByUsername((String)obj.get("username")).get();
-//            if (BCryptPassword.matches(oldPassword, user.getPassword())) {
-//                user.setPassword(BCryptPassword.encode(newPassword));
-//                userRepository.save(user);
-//            } else {
-//                return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message("Wrong password").build();
-//            }
-//        } catch (RuntimeException e) {
-//            return Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).data("").message(e.getMessage()).build();
-//        }
-//        return Response.builder().code(HttpStatus.OK.value()).data("").message("update successful").build();
-//    }
+
 }

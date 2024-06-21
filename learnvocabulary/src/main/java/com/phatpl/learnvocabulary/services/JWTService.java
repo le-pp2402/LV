@@ -1,25 +1,25 @@
 package com.phatpl.learnvocabulary.services;
 
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
+import com.phatpl.learnvocabulary.models.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
 public class JWTService {
 
-    private final String secretKey = "BB4F994CF6B35773CA792F3911E4F";
+    private final String secretKey = "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij";
     private final Long expirationTime = 3 * 24 * 60 * 60 * 1000L;
 
     public Claims extractAllClaims(String token) {
@@ -45,37 +45,28 @@ public class JWTService {
         return getExpirationTime(token).before(new Date());
     }
 
-    public Boolean isValid(String token, UserDetails userDetails) {
+    public Boolean isValid(String token, User user) {
         final var username = getUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isExpired(token));
+        return (username.equals(user.getUsername()) && !isExpired(token));
     }
 
 
     public Key getKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+//        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
-    public String createToken(HashMap<String, Object> extraClaims, UserDetails userDetails) {
+
+    public String createToken(UserResponse userResponse) {
         return Jwts.builder().setIssuer("learnvocabulary")
-                .setSubject(userDetails.getUsername())
+                .setSubject(userResponse.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SignatureAlgorithm.HS256, getKey())
+                .claim("scope", getScope(userResponse))
                 .compact();
     }
 
-    public String createToken(UserDetails userDetails) {
-        return createToken(new HashMap<>(), userDetails);
+    private String getScope(UserResponse userResponse) {
+        return (userResponse.getIsAdmin() == true ? "USER ADMIN" : "USER");
     }
-
-    public String genDefaultUserToken(UserResponse userResponse, UserDetails userDetails) {
-        HashMap<String, Object> extraClaims = new HashMap<String, Object>();
-        extraClaims.put("id", userResponse.getId());
-        extraClaims.put("email", userResponse.getEmail());
-        extraClaims.put("is_admin", userResponse.getIsAdmin());
-        extraClaims.put("elo", userResponse.getElo());
-        return createToken(extraClaims, userDetails);
-    }
-
-
 }

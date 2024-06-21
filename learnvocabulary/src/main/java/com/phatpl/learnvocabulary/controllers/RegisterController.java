@@ -25,22 +25,19 @@ public class RegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
-            return ResponseEntity.ok(Response.builder().code(HttpStatus.NOT_ACCEPTABLE.value()).message(errors.get(0).getDefaultMessage()).data("ERROR").build());
+            return Response.badRequest(errors.get(0).getDefaultMessage());
         } else {
             try {
-                return ResponseEntity.ok(Response.builder().code(HttpStatus.CREATED.value()).data(userService.register(request)).message("created").build());
+                return Response.created(userService.register(request));
             } catch (Exception e) {
-                return ResponseEntity.ok(Response.builder().code(HttpStatus.CREATED.value()).data(e.getMessage()).message("created").build());
+                return Response.badRequest(e.getMessage());
             }
         }
     }
 
-    @PutMapping("/verify")
-    public ResponseEntity<?> verify(@RequestBody VerifyEmailRequest request) {
-        return ResponseEntity.ok(userService.activeUser(request.getMail(), request.getCode()));
-    }
+
 
 }

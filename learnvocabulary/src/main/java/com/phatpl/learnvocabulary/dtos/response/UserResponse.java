@@ -17,14 +17,4 @@ public class UserResponse extends BaseDTO {
     private Boolean isAdmin;
     private Integer elo;
 
-    @Override
-    public String toString() {
-        return "UserResponse{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", isAdmin=" + isAdmin +
-                ", elo=" + elo +
-                '}';
-    }
 }

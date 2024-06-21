@@ -22,7 +22,11 @@ public class LoginController {
 
     @GetMapping
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        Response response = authService.login(loginRequest);
-        return ResponseEntity.ok(response);
+        try {
+            Object obj = authService.login(loginRequest);
+            return Response.ok(obj);
+        } catch (RuntimeException e) {
+            return Response.notFound(e.getMessage());
+        }
     }
 }
