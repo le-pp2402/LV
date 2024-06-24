@@ -1,8 +1,11 @@
 package com.phatpl.learnvocabulary.configs;
 
+import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
+import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,5 +45,19 @@ public class ApplicationConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    
+    @Bean
+    public ApplicationRunner applicationRunner() {
+        return args -> {
+            if (userRepository.findByUsername("admin123").isEmpty()) {
+                User user = new User();
+                user.setUsername("admin123");
+                user.setPassword(BCryptPassword.encode("Admin@123"));
+                user.setIsAdmin(true);
+                user.setCode(0);
+                user.setActivated(true);
+                user.setEmail("admin123@gmail.com");
+                userRepository.save(user);
+            }
+        };
+    }
 }
