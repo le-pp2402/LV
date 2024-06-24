@@ -8,7 +8,6 @@ import com.nimbusds.jwt.SignedJWT;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.exceptions.ExpiredException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -67,7 +66,7 @@ public class JWTService {
     public Boolean verifyToken(String token) {
         try {
             JWSVerifier jwsVerifier = new MACVerifier(secretKey.getBytes());
-            SignedJWT signedJWT =SignedJWT.parse(token);
+            SignedJWT signedJWT = SignedJWT.parse(token);
             if (isExpired(token)) {
                 throw new ExpiredException("token");
             }
@@ -77,9 +76,5 @@ public class JWTService {
         } catch (JOSEException e) {
             throw new RuntimeException(e.getMessage());
         }
-    }
-
-    public String createToken(Authentication authentication) {
-        return null;
     }
 }

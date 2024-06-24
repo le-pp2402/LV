@@ -1,7 +1,6 @@
 package com.phatpl.learnvocabulary.controllers;
 
 
-import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.CreateGroupRequest;
 import com.phatpl.learnvocabulary.dtos.request.UpdateGroupRequest;
 import com.phatpl.learnvocabulary.dtos.response.GroupResponse;
@@ -39,6 +38,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     private final UserRepository userRepository;
     private final UserGroupRepository userGroupRepository;
     private final JWTService jwtService;
+
     @Autowired
     public GroupController(GroupRepository groupRepository, GroupService groupService, UserRepository userRepository, UserGroupRepository userGroupRepository, JWTService jwtService) {
         super(groupService);
@@ -62,7 +62,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
             var group = GroupRequestMapper.instance.toEntity(createGroupRequest);
             jwtService.verifyToken(token);
             Map<String, Object> obj = jwtService.getAllClaims(token).getClaims();
-            User user = userRepository.findById((Integer)obj.get("id")).get();
+            User user = userRepository.findById((Integer) obj.get("id")).get();
             UserGroup userGroup = UserGroup.builder().group(group).user(user).build();
             userGroup.setIsOwner(true);
 
@@ -87,7 +87,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
         String token = request.getHeader("Authorization").substring(7);
         var body = jwtService.getAllClaims(token).getClaims();
         Map<String, Object> obj = (Map<String, Object>) body.get("data");
-        User user = userRepository.findById((Integer)obj.get("id")).get();
+        User user = userRepository.findById((Integer) obj.get("id")).get();
         return BuildResponse.ok(UserGroupResponseMapper.instance.toListDTO(user.getUserGroups()));
     }
 }

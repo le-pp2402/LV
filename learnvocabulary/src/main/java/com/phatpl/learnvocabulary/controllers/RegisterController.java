@@ -1,14 +1,11 @@
 package com.phatpl.learnvocabulary.controllers;
 
-import com.phatpl.learnvocabulary.dtos.Response;
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
 import com.phatpl.learnvocabulary.dtos.request.VerifyEmailRequest;
 import com.phatpl.learnvocabulary.services.UserService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

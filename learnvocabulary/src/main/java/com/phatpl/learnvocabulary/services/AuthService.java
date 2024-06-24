@@ -3,19 +3,15 @@ package com.phatpl.learnvocabulary.services;
 import com.phatpl.learnvocabulary.dtos.request.LoginRequest;
 import com.phatpl.learnvocabulary.dtos.response.LoginResponse;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
-import com.phatpl.learnvocabulary.exceptions.BadRequestException;
 import com.phatpl.learnvocabulary.exceptions.InactiveAccountException;
-import com.phatpl.learnvocabulary.exceptions.WrongUsernameOrPassword;
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.mappers.LoginResponseMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
-import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service

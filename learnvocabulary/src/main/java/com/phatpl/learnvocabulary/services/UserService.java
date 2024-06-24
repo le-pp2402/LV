@@ -26,14 +26,13 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final MailService mailService;
-    private final JWTService jwtService;
     private final UserResponseMapper userResponseMapper;
+
     @Autowired
-    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService, JWTService jwtService) {
+    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService) {
         super(userResponseMapper, userRepository);
         this.userRepository = userRepository;
         this.mailService = mailService;
-        this.jwtService = jwtService;
         this.userResponseMapper = userResponseMapper;
     }
 

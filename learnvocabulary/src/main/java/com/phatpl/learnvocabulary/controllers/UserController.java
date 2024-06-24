@@ -4,7 +4,6 @@ import com.phatpl.learnvocabulary.dtos.request.UpdatePasswordRequest;
 import com.phatpl.learnvocabulary.dtos.response.UserResponse;
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.models.User;
-import com.phatpl.learnvocabulary.services.JWTService;
 import com.phatpl.learnvocabulary.services.UserService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
 import jakarta.validation.Valid;
