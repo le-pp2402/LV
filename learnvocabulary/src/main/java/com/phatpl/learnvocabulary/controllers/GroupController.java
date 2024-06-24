@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.Map;
 
 @RestController
@@ -59,9 +60,8 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
         String token = request.getHeader("Authorization").substring(7);
         try {
             var group = GroupRequestMapper.instance.toEntity(createGroupRequest);
-
-            var body = jwtService.verifyToken(token).getBody();
-            Map<String, Object> obj = (Map<String, Object>) body.get("data");
+            jwtService.verifyToken(token);
+            Map<String, Object> obj = jwtService.getAllClaims(token).getClaims();
             User user = userRepository.findById((Integer)obj.get("id")).get();
             UserGroup userGroup = UserGroup.builder().group(group).user(user).build();
             userGroup.setIsOwner(true);
@@ -69,7 +69,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
             Integer groupId = groupRepository.save(group).getId();
             userGroupRepository.save(userGroup);
             return BuildResponse.ok(groupRepository.findById(groupId));
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return BuildResponse.ok(e.getMessage());
         }
     }
@@ -80,11 +80,12 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
         Logger.log(updateGroupRequest.toString());
         return BuildResponse.ok(groupService.updateGroupInfo(id, updateGroupRequest));
     }
+
     @GetMapping("/me")
-    public ResponseEntity getGroupOfUser(HttpServletRequest request, GroupFilter groupFilter) {
+    public ResponseEntity getGroupOfUser(HttpServletRequest request, GroupFilter groupFilter) throws ParseException {
         // check authorization
         String token = request.getHeader("Authorization").substring(7);
-        var body = jwtService.verifyToken(token).getBody();
+        var body = jwtService.getAllClaims(token).getClaims();
         Map<String, Object> obj = (Map<String, Object>) body.get("data");
         User user = userRepository.findById((Integer)obj.get("id")).get();
         return BuildResponse.ok(UserGroupResponseMapper.instance.toListDTO(user.getUserGroups()));
