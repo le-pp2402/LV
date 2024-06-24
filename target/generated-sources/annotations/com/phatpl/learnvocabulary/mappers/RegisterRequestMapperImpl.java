@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-06-21T15:35:28+0700",
+    date = "2024-06-21T03:00:56+0700",
     comments = "version: 1.6.0.Beta2, compiler: javac, environment: Java 17.0.10 (Oracle Corporation)"
 )
 @Component
@@ -23,9 +23,6 @@ public class RegisterRequestMapperImpl implements RegisterRequestMapper {
 
         RegisterRequest registerRequest = new RegisterRequest();
 
-        registerRequest.setId( entity.getId() );
-        registerRequest.setCreatedAt( entity.getCreatedAt() );
-        registerRequest.setUpdatedAt( entity.getUpdatedAt() );
         registerRequest.setUsername( entity.getUsername() );
         registerRequest.setPassword( entity.getPassword() );
         registerRequest.setEmail( entity.getEmail() );
@@ -39,16 +36,13 @@ public class RegisterRequestMapperImpl implements RegisterRequestMapper {
             return null;
         }
 
-        User user = new User();
+        User.UserBuilder user = User.builder();
 
-        user.setId( dto.getId() );
-        user.setCreatedAt( dto.getCreatedAt() );
-        user.setUpdatedAt( dto.getUpdatedAt() );
-        user.setUsername( dto.getUsername() );
-        user.setPassword( dto.getPassword() );
-        user.setEmail( dto.getEmail() );
+        user.username( dto.getUsername() );
+        user.password( dto.getPassword() );
+        user.email( dto.getEmail() );
 
-        return user;
+        return user.build();
     }
 
     @Override

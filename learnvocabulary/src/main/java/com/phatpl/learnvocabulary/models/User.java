@@ -1,5 +1,8 @@
 package com.phatpl.learnvocabulary.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -32,5 +35,6 @@ public class User extends BaseModel {
     Integer code;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonProperty("user_groups")
     List<UserGroup> userGroups;
 }
