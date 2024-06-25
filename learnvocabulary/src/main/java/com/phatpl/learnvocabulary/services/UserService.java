@@ -20,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class UserService extends BaseService<User, UserResponse, UserFilter, Integer> {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
@@ -36,7 +38,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         this.userResponseMapper = userResponseMapper;
     }
 
-    public UserResponse register(RegisterRequest request) throws RuntimeException, InterruptedException {
+    public UserResponse register(RegisterRequest request) throws RuntimeException {
         String username = request.getUsername();
         String email = request.getEmail();
 
@@ -45,8 +47,8 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         } else if (userRepository.findByUsername(username).isPresent()) {
             throw new ExistedException("username");
         }
-        
-        User user = (User) RegisterRequestMapper.instance.toEntity(request);
+
+        User user = RegisterRequestMapper.instance.toEntity(request);
         user.setPassword(BCryptPassword.encode(user.getPassword()));
         user.setCode(MailUtil.genCode());
         user.setActivated(false);
@@ -62,7 +64,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         return userResponseMapper.toDTO(user);
     }
 
-    public UserResponse activeUser(String userMail, Integer code) throws Exception {
+    public UserResponse activeUser(String userMail, Integer code) {
         var optUser = userRepository.findByEmail(userMail);
         if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
             var user = optUser.get();
@@ -71,9 +73,9 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         } else throw new WrongVerifyCode();
     }
 
-    public UserResponse updateUserInfo(String oldPassword, String newPassword) throws Exception {
+    public UserResponse updateUserInfo(String oldPassword, String newPassword) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new EntityNotFoundException());
+        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(EntityNotFoundException::new);
         log.info(user.getPassword());
         log.info(BCryptPassword.encode(oldPassword));
         if (BCryptPassword.matches(oldPassword, user.getPassword())) {

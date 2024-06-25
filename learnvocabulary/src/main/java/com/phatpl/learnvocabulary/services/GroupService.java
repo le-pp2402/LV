@@ -116,15 +116,12 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
     }
 
     public void delete(Integer id, Authentication auth) {
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow(
-                () -> new EntityNotFoundException()
-        );
-        Group group = groupRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException()
-        );
-        UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), group.getId()).orElseThrow(
-                () -> new EntityNotFoundException()
-        );
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow(EntityNotFoundException::new);
+        Group group = groupRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+        UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), group.getId())
+                .orElseThrow(EntityNotFoundException::new);
 
         if (userGroup.getIsOwner()) {
             userGroupRepository.deleteByGroupId(group.getId());
