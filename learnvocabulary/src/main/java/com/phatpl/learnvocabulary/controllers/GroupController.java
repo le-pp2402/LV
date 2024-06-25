@@ -72,7 +72,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     public ResponseEntity followGroup(@NotNull @PathVariable("id") Integer id) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(groupService.followGroup(auth.getName(), id));
+            return BuildResponse.ok(groupService.follow(auth.getName(), id));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {

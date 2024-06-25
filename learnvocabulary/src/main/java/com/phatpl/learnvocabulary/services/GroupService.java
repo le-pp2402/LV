@@ -82,15 +82,14 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
             throw new LimitedException("groups");
         }
 
-        UserGroup userGroup = UserGroup.builder().group(group).user(user).build();
-        userGroup.setIsOwner(true);
+        UserGroup userGroup = UserGroup.builder().group(group).user(user).isOwner(true).build();
 
         groupRepository.save(group);
-        Integer idGroup = userGroupRepository.save(userGroup).getId();
-        return userGroupResponseMapper.toDTO(userGroupRepository.findById(idGroup).get());
+        var saved = userGroupRepository.save(userGroup);
+        return userGroupResponseMapper.toDTO(saved);
     }
 
-    public UserGroupResponse followGroup(String username, Integer id) {
+    public UserGroupResponse follow(String username, Integer id) {
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new EntityNotFoundException(username + " not found")
         );
