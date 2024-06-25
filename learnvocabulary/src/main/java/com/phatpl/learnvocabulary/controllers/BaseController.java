@@ -39,4 +39,5 @@ public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends
         return BuildResponse.ok(lst);
     }
 
+    
 }

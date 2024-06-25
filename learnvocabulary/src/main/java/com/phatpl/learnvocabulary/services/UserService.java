@@ -45,7 +45,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         } else if (userRepository.findByUsername(username).isPresent()) {
             throw new ExistedException("username");
         }
-
+        
         User user = (User) RegisterRequestMapper.instance.toEntity(request);
         user.setPassword(BCryptPassword.encode(user.getPassword()));
         user.setCode(MailUtil.genCode());

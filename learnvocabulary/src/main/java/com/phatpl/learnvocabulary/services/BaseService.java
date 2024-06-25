@@ -45,4 +45,5 @@ public class BaseService<E extends BaseModel,
         baseRepository.deleteById((ID) entity.getId());
         return baseMapper.toDTO(baseRepository.save(entity));
     }
+    
 }

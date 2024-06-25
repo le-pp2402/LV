@@ -3,11 +3,14 @@ package com.phatpl.learnvocabulary.dtos.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import com.phatpl.learnvocabulary.models.Group;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class UserGroupResponse extends BaseDTO {
-    Integer id;
     @JsonProperty("group")
-    Group group;
+    private Group group;
     @JsonProperty("is_owner")
-    Boolean isOwner;
+    private Boolean isOwner;
 }

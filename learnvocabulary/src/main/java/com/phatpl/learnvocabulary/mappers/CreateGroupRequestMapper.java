@@ -7,6 +7,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface GroupRequestMapper extends  BaseMapper<Group, CreateGroupRequest> {
-    GroupRequestMapper instance = Mappers.getMapper(GroupRequestMapper.class);
+public interface CreateGroupRequestMapper extends BaseMapper<Group, CreateGroupRequest> {
+    CreateGroupRequestMapper instance = Mappers.getMapper(CreateGroupRequestMapper.class);
 }

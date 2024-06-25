@@ -1,7 +1,6 @@
 package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.dtos.request.RegisterRequest;
-import com.phatpl.learnvocabulary.dtos.request.VerifyEmailRequest;
 import com.phatpl.learnvocabulary.services.UserService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
 import jakarta.validation.Valid;
@@ -9,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -37,16 +39,4 @@ public class RegisterController {
             }
         }
     }
-
-    @PutMapping("/verify")
-    public ResponseEntity<?> verify(@RequestBody VerifyEmailRequest request) {
-        try {
-            return BuildResponse.ok(
-                    userService.activeUser(request.getMail(), request.getCode())
-            );
-        } catch (Exception e) {
-            return BuildResponse.badRequest(e.getMessage());
-        }
-    }
-
 }

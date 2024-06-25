@@ -10,18 +10,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface GroupRepository extends BaseRepository<Group , GroupFilter, Integer> {
+public interface GroupRepository extends BaseRepository<Group, GroupFilter, Integer> {
     Optional<Group> findByName(String name);
 
-    @Query(value = "SELECT *\n" +
+    @Query(value = "SELECT `groups`.*\n" +
             "FROM (\n" +
-            "\tSELECT user_group.id, user_group.group_id, user_group.is_owner \n" +
+            "\tSELECT * \n" +
             "    FROM user_group \n" +
-            "    WHERE user_id = :id\n" +
+            "    WHERE user_id = :userId\n" +
             "    ) as gug\n" +
             "\tJOIN `groups` \n" +
-            "\tON `groups`.id = gug.id\n" +
+            "\tON `groups`.id = gug.group_id\n" +
             "WHERE (`groups`.is_private = 1 and gug.is_owner = 1) or (`groups`.is_private = 0)", nativeQuery = true)
-    List<Group> findByUserId(@Param("id") Integer id);
+    List<Group> findByUserId(@Param("userId") Integer userId);
 
 }

@@ -48,6 +48,7 @@ public class SecurityConfig {
         http.oauth2ResourceServer(auth -> auth.jwt(
                 jwtDecoder -> jwtDecoder.decoder(jwtDecoder())
         ));
+
         http.authenticationProvider(authenticationProvider);
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         http.csrf(AbstractHttpConfigurer::disable);
