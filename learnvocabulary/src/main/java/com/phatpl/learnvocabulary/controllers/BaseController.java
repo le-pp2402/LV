@@ -25,7 +25,7 @@ public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Integer id) {
-        DTO response = service.findById(id);
+        DTO response = service.findByIdDTO(id);
         if (response != null) {
             return BuildResponse.ok(response);
         }
@@ -35,9 +35,7 @@ public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends
     @GetMapping
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity findAll() {
-        List<DTO> lst = service.findAll();
+        List<DTO> lst = service.findAllDTO();
         return BuildResponse.ok(lst);
     }
-
-    
 }

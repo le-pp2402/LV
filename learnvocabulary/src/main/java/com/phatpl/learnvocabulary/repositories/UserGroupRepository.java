@@ -1,6 +1,5 @@
 package com.phatpl.learnvocabulary.repositories;
 
-import com.phatpl.learnvocabulary.dtos.response.UserGroupResponse;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.models.UserGroup;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +13,7 @@ import java.util.Optional;
 public interface UserGroupRepository extends BaseRepository<UserGroup, BaseFilter, Integer> {
     Optional<UserGroup> findById(Integer id);
 
-    List<UserGroupResponse> findByUserId(Integer id);
+    List<UserGroup> findByUserId(Integer user_id);
 
     @Query(value = "select count(user_id) from user_group where user_id = :id", nativeQuery = true)
     Integer numberOfGroups(@Param("id") Integer userId);

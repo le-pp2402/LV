@@ -1,6 +1,8 @@
 package com.phatpl.learnvocabulary.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,7 +16,8 @@ import lombok.experimental.FieldDefaults;
 public class Word extends BaseModel {
     String word;
     String phonetic;
+    @Column(columnDefinition = "TEXT")
     String definition;
-    String example1;
-    String example2;
+    @Column(columnDefinition = "TEXT")
+    String example;
 }

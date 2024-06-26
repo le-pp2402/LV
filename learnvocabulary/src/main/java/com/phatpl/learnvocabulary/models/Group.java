@@ -1,13 +1,9 @@
 package com.phatpl.learnvocabulary.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -22,13 +18,5 @@ public class Group extends BaseModel {
 
     @Builder.Default
     Boolean isPrivate = true;
-
-//    @OneToMany(mappedBy = "group")
-//    @JsonProperty("group_detail")
-//    @JsonIgnoreProperties("group")
-//    List<GroupWord> wordGroups;
-
-    @OneToMany
-    @JsonIgnore
-    List<UserGroup> userGroups;
+    
 }
