@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends BaseRepository<Group, GroupFilter, Integer> {
-    Optional<Group> findByName(String name);
 
     Optional<Group> findById(Integer id);
 
