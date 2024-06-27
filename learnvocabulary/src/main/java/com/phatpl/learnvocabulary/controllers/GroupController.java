@@ -76,12 +76,15 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
         }
     }
 
+
     @Override
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Integer groupId) {
         try {
             JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
             return BuildResponse.ok(wordService.getWordsOfGroup(groupId, auth));
+        } catch (UnauthorizationException e) {
+            return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
             return BuildResponse.badRequest(e.getMessage());
         }

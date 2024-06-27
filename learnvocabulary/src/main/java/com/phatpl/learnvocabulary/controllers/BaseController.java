@@ -38,4 +38,5 @@ public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends
         List<DTO> lst = service.findAllDTO();
         return BuildResponse.ok(lst);
     }
+    
 }

@@ -11,10 +11,9 @@ import com.phatpl.learnvocabulary.utils.BuildResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/words")
@@ -39,5 +38,15 @@ public class WordController extends BaseController<Word, WordResponse, BaseFilte
         } catch (RuntimeException e) {
             return BuildResponse.badRequest(e.getMessage());
         }
+    }
+
+//    @GetMapping("/w/")
+//    public ResponseEntity findAll(@RequestBody Map<String, String> body) {
+//        return BuildResponse.ok(wordService.findByDB(body.get("word")));
+//    }
+
+    @GetMapping("/w/")
+    public ResponseEntity findWord(@RequestBody Map<String, String> body) {
+        return BuildResponse.ok(wordService.findByTrie(body.get("word")));
     }
 }

@@ -5,10 +5,12 @@ import com.phatpl.learnvocabulary.dtos.response.WordResponse;
 import com.phatpl.learnvocabulary.exceptions.UnauthorizationException;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.WordResponseMapper;
+import com.phatpl.learnvocabulary.models.Group;
 import com.phatpl.learnvocabulary.models.GroupWord;
 import com.phatpl.learnvocabulary.models.Word;
 import com.phatpl.learnvocabulary.repositories.GroupWordRepository;
 import com.phatpl.learnvocabulary.repositories.WordRepository;
+import com.phatpl.learnvocabulary.utils.BuildTrie;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -58,10 +60,27 @@ public class WordService extends BaseService<Word, WordResponse, BaseFilter, Int
 
     public List<WordResponse> getWordsOfGroup(Integer groupId, JwtAuthenticationToken auth) {
         Integer userId = extractUserId(auth);
-        var groupwords = groupWordRepository.findByGroupId(groupId);
+        Group group = userGroupService.getGroupService().findById(groupId);
+        if (!group.getIsPrivate() || userGroupService.isOwner(userId, groupId)) {
+            var words = new ArrayList<WordResponse>();
+            groupWordRepository.findByGroupId(groupId).forEach(
+                    (e) -> words.add(wordResponseMapper.toDTO(e.getWord()))
+            );
+            return words;
+        } else {
+            throw new UnauthorizationException();
+        }
+    }
+
+    public List<WordResponse> findByDB(String word) {
+        return wordResponseMapper.toListDTO(wordRepository.findByWordLike(word + "%"));
+    }
+
+    public List<WordResponse> findByTrie(String word) {
+        var ids = BuildTrie.find(word);
         var words = new ArrayList<WordResponse>();
-        for (GroupWord gw : groupwords) {
-            words.add(wordResponseMapper.toDTO(gw.getWord()));
+        for (Integer id : ids) {
+            words.add(wordResponseMapper.toDTO(BuildTrie.mapWords.get(id)));
         }
         return words;
     }

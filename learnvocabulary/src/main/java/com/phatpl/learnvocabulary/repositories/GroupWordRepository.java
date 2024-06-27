@@ -8,4 +8,5 @@ import java.util.List;
 public interface GroupWordRepository extends BaseRepository<GroupWord, BaseFilter, Integer> {
 
     List<GroupWord> findByGroupId(Integer groupId);
+    
 }

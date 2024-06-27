@@ -64,4 +64,7 @@ public class BaseService<E extends BaseModel,
     }
 
 
+//    public List<DTO> findWithFilter(FT ft) {
+//        return baseMapper.toListDTO(repo.findWithFilter(ft.getPageable()));
+//    }
 }

@@ -2,14 +2,15 @@ package com.phatpl.learnvocabulary.repositories;
 
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.models.Word;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface WordRepository extends BaseRepository<Word, BaseFilter, Integer> {
-//    @Query(value = "SELECT words.*\n" +
-//            "FROM \n" +
-//            "words JOIN (SELECT group_id, word_id FROM group_word WHERE group_id = :groupId) AS gw\n" +
-//            "ON gw.word_id = words.id;", nativeQuery = true)
-//    List<Word> findByGroupId(@Param("groupID") Integer groupId);
 
+    @Query(value = "select * from words where word like :p limit 10", nativeQuery = true)
+    List<Word> findByWordLike(@Param("p") String pattern);
 }

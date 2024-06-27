@@ -37,7 +37,7 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
         this.userRepository = userRepository;
         this.groupResponseMapper = groupResponseMapper;
     }
-
+    
     public List<GroupResponse> findGroupByUser(JwtAuthenticationToken jwtAuth) {
         var userId = extractUserId(jwtAuth);
         User user = userRepository.findById(userId).orElseThrow(
