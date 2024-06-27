@@ -4,8 +4,9 @@ import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.repositories.WordRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
-import com.phatpl.learnvocabulary.utils.BuildTrie;
 import com.phatpl.learnvocabulary.utils.CustomUserDetail;
+import com.phatpl.learnvocabulary.utils.RadixTrie.PruningRadixTrie;
+import com.phatpl.learnvocabulary.utils.Trie.BuildTrie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
@@ -65,12 +66,13 @@ public class ApplicationConfig {
             }
             var words = wordRepository.findAll();
             for (var word : words) {
-                log.info("added word with id = " + word.getId());
                 BuildTrie.addWord(word.getId(), word.getWord());
                 BuildTrie.mapWords.put(word.getId(), word);
+                String compressedWord = word.getWord() + word.getId().toString();
+                PruningRadixTrie.addTerm(compressedWord, 1);
             }
-            BuildTrie.merge(0, 0);
-            log.info("finished");
+            BuildTrie.merge(0);
+            log.info("init finished");
         };
     }
 }

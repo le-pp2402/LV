@@ -1,4 +1,4 @@
-package com.phatpl.learnvocabulary.utils;
+package com.phatpl.learnvocabulary.utils.Trie;
 
 
 import lombok.AllArgsConstructor;

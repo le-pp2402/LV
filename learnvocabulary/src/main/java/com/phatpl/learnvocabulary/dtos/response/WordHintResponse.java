@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupResponse extends BaseDTO {
-    private String name;
-    private Boolean isPrivate;
+public class WordHintResponse extends BaseDTO {
+    private String word;
 }

@@ -1,4 +1,4 @@
-package com.phatpl.learnvocabulary.utils;
+package com.phatpl.learnvocabulary.utils.Trie;
 
 import com.phatpl.learnvocabulary.models.Word;
 
@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class BuildTrie {
     public static List<Node> Trie;
-    public static Map<Integer, Word> mapWords = new HashMap<Integer, Word>();
+    public static Map<Integer, Word> mapWords = new HashMap<>();
 
     public BuildTrie() {
-        Trie = new ArrayList<Node>();
+        Trie = new ArrayList<>();
         Trie.add(new Node());
     }
 
@@ -35,11 +35,11 @@ public class BuildTrie {
         lastNode.ids.add(id);
     }
 
-    public static void merge(int id, int p) {
+    public static void merge(int id) {
         Node curNode = Trie.get(id);
         for (int ch = 0; ch < 26; ch++) {
             if (curNode.nextPos[ch] != 0) {
-                merge(curNode.nextPos[ch], id);
+                merge(curNode.nextPos[ch]);
             }
         }
 
@@ -72,7 +72,7 @@ public class BuildTrie {
         }
         Node lastNode = Trie.get(curPos);
         if (lastNode.isEnd) {
-            return new ArrayList<Integer>(lastNode.ids.get(0));
+            return new ArrayList<>(lastNode.ids.get(0));
         } else {
             return lastNode.ids;
         }

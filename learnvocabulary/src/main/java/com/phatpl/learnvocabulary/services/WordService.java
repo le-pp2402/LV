@@ -10,7 +10,6 @@ import com.phatpl.learnvocabulary.models.GroupWord;
 import com.phatpl.learnvocabulary.models.Word;
 import com.phatpl.learnvocabulary.repositories.GroupWordRepository;
 import com.phatpl.learnvocabulary.repositories.WordRepository;
-import com.phatpl.learnvocabulary.utils.BuildTrie;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -72,16 +71,5 @@ public class WordService extends BaseService<Word, WordResponse, BaseFilter, Int
         }
     }
 
-    public List<WordResponse> findByDB(String word) {
-        return wordResponseMapper.toListDTO(wordRepository.findByWordLike(word + "%"));
-    }
 
-    public List<WordResponse> findByTrie(String word) {
-        var ids = BuildTrie.find(word);
-        var words = new ArrayList<WordResponse>();
-        for (Integer id : ids) {
-            words.add(wordResponseMapper.toDTO(BuildTrie.mapWords.get(id)));
-        }
-        return words;
-    }
 }
