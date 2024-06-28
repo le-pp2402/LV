@@ -28,7 +28,7 @@ public class LoginController {
         try {
             return BuildResponse.ok(authService.login(loginRequest));
         } catch (Exception e) {
-            return BuildResponse.badRequest(e.getMessage());
+            return BuildResponse.unauthorized(e.getMessage());
         }
     }
 }

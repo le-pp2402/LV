@@ -1,17 +1,15 @@
 package com.phatpl.learnvocabulary.services;
 
+import com.phatpl.learnvocabulary.dtos.request.UpdateGroupRequest;
 import com.phatpl.learnvocabulary.dtos.response.GroupResponse;
+import com.phatpl.learnvocabulary.exceptions.UnauthorizationException;
 import com.phatpl.learnvocabulary.filters.GroupFilter;
-import com.phatpl.learnvocabulary.mappers.CreateGroupRequestMapper;
 import com.phatpl.learnvocabulary.mappers.GroupResponseMapper;
-import com.phatpl.learnvocabulary.mappers.UserGroupResponseMapper;
-import com.phatpl.learnvocabulary.mappers.WordResponseMapper;
 import com.phatpl.learnvocabulary.models.Group;
 import com.phatpl.learnvocabulary.models.User;
+import com.phatpl.learnvocabulary.models.UserGroup;
 import com.phatpl.learnvocabulary.repositories.GroupRepository;
 import com.phatpl.learnvocabulary.repositories.UserGroupRepository;
-import com.phatpl.learnvocabulary.repositories.UserRepository;
-import com.phatpl.learnvocabulary.repositories.WordRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -26,29 +24,51 @@ import java.util.List;
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GroupService extends BaseService<Group, GroupResponse, GroupFilter, Integer> {
-    UserRepository userRepository;
     GroupResponseMapper groupResponseMapper;
     GroupRepository groupRepository;
+    UserService userService;
+    UserGroupRepository userGroupRepository;
 
     @Autowired
-    public GroupService(GroupRepository groupRepository, UserGroupRepository userGroupRepository, CreateGroupRequestMapper createGroupRequestMapper, UserRepository userRepository, GroupResponseMapper groupResponseMapper, UserGroupResponseMapper userGroupResponseMapper, WordRepository wordRepository, WordResponseMapper wordResponseMapper) {
+    public GroupService(GroupRepository groupRepository, GroupResponseMapper groupResponseMapper, UserService userService, UserGroupRepository userGroupRepository) {
         super(groupResponseMapper, groupRepository);
         this.groupRepository = groupRepository;
-        this.userRepository = userRepository;
         this.groupResponseMapper = groupResponseMapper;
+        this.userService = userService;
+        this.userGroupRepository = userGroupRepository;
     }
-    
+
+    public UserGroup findByUserIdAndGroupId(Integer userId, Integer groupId) {
+
+        return userGroupRepository.findByUserIdAndGroupId(userId, groupId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public Boolean isOwner(Integer userId, Integer groupId) {
+        try {
+            findByUserIdAndGroupId(userId, groupId);
+            return true;
+        } catch (EntityNotFoundException e) {
+            return false;
+        }
+    }
+
     public List<GroupResponse> findGroupByUser(JwtAuthenticationToken jwtAuth) {
         var userId = extractUserId(jwtAuth);
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("not found user with id = " + userId)
-        );
+        User user = userService.findById(userId);
         var groups = groupRepository.findByUserId(user.getId());
         return groupResponseMapper.toListDTO(groups);
     }
 
-    public Group findById(Integer groupId) {
-        return groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
+    public GroupResponse updateGroupInfo(Integer groupId, UpdateGroupRequest updateGroupRequest, JwtAuthenticationToken jwtAuth) {
+        var userId = extractUserId(jwtAuth);
+        if (!isOwner(userId, groupId)) throw new UnauthorizationException();
+        var group = findById(groupId);
+        group.setName(updateGroupRequest.getName());
+        group.setIsPrivate(updateGroupRequest.getIsPrivate());
+        if (updateGroupRequest.getIsPrivate()) {
+            userGroupRepository.deleteByGroupIdAndUserIdNot(groupId, userId);
+        }
+        return createDTO(group);
     }
 
 }

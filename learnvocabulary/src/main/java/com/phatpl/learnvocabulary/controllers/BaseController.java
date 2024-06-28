@@ -25,7 +25,7 @@ public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Integer id) {
-        DTO response = service.findByIdDTO(id);
+        DTO response = service.findDTOById(id);
         if (response != null) {
             return BuildResponse.ok(response);
         }
@@ -38,5 +38,5 @@ public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends
         List<DTO> lst = service.findAllDTO();
         return BuildResponse.ok(lst);
     }
-    
+
 }

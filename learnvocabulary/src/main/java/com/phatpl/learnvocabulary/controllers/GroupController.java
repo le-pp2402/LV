@@ -7,6 +7,7 @@ import com.phatpl.learnvocabulary.exceptions.UnauthorizationException;
 import com.phatpl.learnvocabulary.filters.GroupFilter;
 import com.phatpl.learnvocabulary.models.Group;
 import com.phatpl.learnvocabulary.services.GroupService;
+import com.phatpl.learnvocabulary.services.GroupWordService;
 import com.phatpl.learnvocabulary.services.UserGroupService;
 import com.phatpl.learnvocabulary.services.WordService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
@@ -31,13 +32,21 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     GroupService groupService;
     UserGroupService userGroupService;
     WordService wordService;
+    GroupWordService groupWordService;
 
     @Autowired
-    public GroupController(GroupService groupService, UserGroupService userGroupService, WordService wordService) {
+    public GroupController(GroupService groupService, UserGroupService userGroupService, WordService wordService, GroupWordService groupWordService) {
         super(groupService);
         this.groupService = groupService;
         this.userGroupService = userGroupService;
         this.wordService = wordService;
+        this.groupWordService = groupWordService;
+    }
+
+    @Override
+    @GetMapping
+    public ResponseEntity findAll() {
+        return BuildResponse.ok(groupService.findAllDTO());
     }
 
     @PostMapping("/me")
@@ -68,7 +77,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     public ResponseEntity updateGroupInfo(@PathVariable("id") Integer groupId, @RequestBody UpdateGroupRequest updateGroupRequest) {
         try {
             JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(userGroupService.updateGroupInfo(groupId, updateGroupRequest, auth));
+            return BuildResponse.ok(groupService.updateGroupInfo(groupId, updateGroupRequest, auth));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -82,7 +91,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     public ResponseEntity findById(@PathVariable("id") Integer groupId) {
         try {
             JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(wordService.getWordsOfGroup(groupId, auth));
+            return BuildResponse.ok(groupWordService.getWordsOfGroup(groupId, auth));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -106,6 +115,18 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
         try {
             JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
             return BuildResponse.ok(userGroupService.follow(groupId, auth));
+        } catch (UnauthorizationException e) {
+            return BuildResponse.unauthorized(e.getMessage());
+        } catch (RuntimeException e) {
+            return BuildResponse.badRequest(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/clone")
+    public ResponseEntity cloneGroup(@NotNull @PathVariable("id") Integer groupId) {
+        try {
+            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+            return BuildResponse.ok(groupWordService.clone(groupId, auth));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
