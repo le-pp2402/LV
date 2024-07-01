@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,4 +51,13 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
             return BuildResponse.unauthorized(e.getMessage());
         }
     }
+
+    @Override
+    @GetMapping
+    @PreAuthorize("hasAuthority(SCOPE_ADMIN)")
+    public ResponseEntity findAll() {
+        var users = userService.findAllDTO();
+        return BuildResponse.ok(users);
+    }
+
 }

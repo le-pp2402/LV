@@ -39,7 +39,6 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
     }
 
     public UserGroup findByUserIdAndGroupId(Integer userId, Integer groupId) {
-
         return userGroupRepository.findByUserIdAndGroupId(userId, groupId).orElseThrow(EntityNotFoundException::new);
     }
 
