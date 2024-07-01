@@ -9,7 +9,6 @@ import com.phatpl.learnvocabulary.models.Group;
 import com.phatpl.learnvocabulary.services.GroupService;
 import com.phatpl.learnvocabulary.services.GroupWordService;
 import com.phatpl.learnvocabulary.services.UserGroupService;
-import com.phatpl.learnvocabulary.services.WordService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -28,25 +27,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/groups")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GroupController extends BaseController<Group, GroupResponse, GroupFilter, Integer> {
-
     GroupService groupService;
     UserGroupService userGroupService;
-    WordService wordService;
     GroupWordService groupWordService;
 
     @Autowired
-    public GroupController(GroupService groupService, UserGroupService userGroupService, WordService wordService, GroupWordService groupWordService) {
+    public GroupController(GroupService groupService, UserGroupService userGroupService, GroupWordService groupWordService) {
         super(groupService);
         this.groupService = groupService;
         this.userGroupService = userGroupService;
-        this.wordService = wordService;
         this.groupWordService = groupWordService;
-    }
-
-    @Override
-    @GetMapping
-    public ResponseEntity findAll() {
-        return BuildResponse.ok(groupService.findAllDTO());
     }
 
     @PostMapping("/me")

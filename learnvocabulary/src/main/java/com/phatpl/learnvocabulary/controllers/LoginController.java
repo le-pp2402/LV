@@ -24,7 +24,7 @@ public class LoginController {
     }
 
     @GetMapping
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
         try {
             return BuildResponse.ok(authService.login(loginRequest));
         } catch (RuntimeException e) {
