@@ -20,4 +20,6 @@ public interface UserGroupRepository extends BaseRepository<UserGroup, BaseFilte
     void deleteByGroupId(Integer groupId);
 
     void deleteByGroupIdAndUserIdNot(Integer groupId, Integer userId);
+
+    void deleteByUserIdAndGroupId(Integer userId, Integer groupId);
 }

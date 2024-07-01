@@ -7,11 +7,12 @@ import com.phatpl.learnvocabulary.filters.GroupFilter;
 import com.phatpl.learnvocabulary.mappers.GroupResponseMapper;
 import com.phatpl.learnvocabulary.models.Group;
 import com.phatpl.learnvocabulary.models.User;
-import com.phatpl.learnvocabulary.models.UserGroup;
 import com.phatpl.learnvocabulary.repositories.GroupRepository;
 import com.phatpl.learnvocabulary.repositories.UserGroupRepository;
+import com.phatpl.learnvocabulary.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -23,37 +24,32 @@ import java.util.List;
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Getter
 public class GroupService extends BaseService<Group, GroupResponse, GroupFilter, Integer> {
     GroupResponseMapper groupResponseMapper;
     GroupRepository groupRepository;
-    UserService userService;
+    UserRepository userRepository;
     UserGroupRepository userGroupRepository;
 
     @Autowired
-    public GroupService(GroupRepository groupRepository, GroupResponseMapper groupResponseMapper, UserService userService, UserGroupRepository userGroupRepository) {
+    public GroupService(GroupRepository groupRepository, GroupResponseMapper groupResponseMapper, UserRepository userRepository, UserGroupRepository userGroupRepository) {
         super(groupResponseMapper, groupRepository);
         this.groupRepository = groupRepository;
         this.groupResponseMapper = groupResponseMapper;
-        this.userService = userService;
+        this.userRepository = userRepository;
         this.userGroupRepository = userGroupRepository;
     }
 
-    public UserGroup findByUserIdAndGroupId(Integer userId, Integer groupId) {
-        return userGroupRepository.findByUserIdAndGroupId(userId, groupId).orElseThrow(EntityNotFoundException::new);
-    }
-
     public Boolean isOwner(Integer userId, Integer groupId) {
-        try {
-            findByUserIdAndGroupId(userId, groupId);
-            return true;
-        } catch (EntityNotFoundException e) {
-            return false;
-        }
+        var userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
+        return userGroup.isPresent() && userGroup.get().getIsOwner();
     }
 
     public List<GroupResponse> findGroupByUser(JwtAuthenticationToken jwtAuth) {
         var userId = extractUserId(jwtAuth);
-        User user = userService.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(
+                EntityNotFoundException::new
+        );
         var groups = groupRepository.findByUserId(user.getId());
         return groupResponseMapper.toListDTO(groups);
     }

@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/groups")
+@RequestMapping(value = "/groups")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GroupController extends BaseController<Group, GroupResponse, GroupFilter, Integer> {
 
