@@ -1,9 +1,11 @@
 package com.phatpl.learnvocabulary.services;
 
+import com.phatpl.learnvocabulary.dtos.request.DeleteWordRequest;
 import com.phatpl.learnvocabulary.dtos.request.SaveWordRequest;
 import com.phatpl.learnvocabulary.dtos.response.GroupResponse;
 import com.phatpl.learnvocabulary.dtos.response.GroupWordResponse;
 import com.phatpl.learnvocabulary.dtos.response.WordResponse;
+import com.phatpl.learnvocabulary.exceptions.LimitedException;
 import com.phatpl.learnvocabulary.exceptions.UnauthorizationException;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.GroupWordResponseMapper;
@@ -12,6 +14,7 @@ import com.phatpl.learnvocabulary.models.GroupWord;
 import com.phatpl.learnvocabulary.models.UserGroup;
 import com.phatpl.learnvocabulary.repositories.GroupWordRepository;
 import com.phatpl.learnvocabulary.repositories.UserGroupRepository;
+import com.phatpl.learnvocabulary.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,31 +36,33 @@ public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, 
     GroupWordResponseMapper groupWordResponseMapper;
     WordService wordService;
     GroupService groupService;
-    UserService userService;
+    UserRepository userRepository;
     UserGroupRepository userGroupRepository;
 
     @Autowired
-    public GroupWordService(GroupWordRepository groupWordRepository, GroupWordResponseMapper groupWordResponseMapper, WordService wordService, UserGroupService userGroupService, GroupService groupService, UserService userService, UserGroupRepository userGroupRepository) {
+    public GroupWordService(GroupWordRepository groupWordRepository, GroupWordResponseMapper groupWordResponseMapper, WordService wordService, GroupService groupService, UserRepository userRepository, UserGroupRepository userGroupRepository) {
         super(groupWordResponseMapper, groupWordRepository);
         this.groupWordRepository = groupWordRepository;
         this.groupWordResponseMapper = groupWordResponseMapper;
         this.wordService = wordService;
+        this.userRepository = userRepository;
         this.userGroupRepository = userGroupRepository;
         this.groupService = groupService;
-        this.userService = userService;
     }
 
-    public Boolean saveIntoGroup(SaveWordRequest request, JwtAuthenticationToken auth) {
+    public Boolean saveIntoGroup(SaveWordRequest request, Integer wordId, JwtAuthenticationToken auth) {
         var userId = extractUserId(auth);
-        var word = wordService.findById(request.getWordId());
+        var word = wordService.findById(wordId);
         var userGroup = userGroupRepository.findByUserIdAndGroupId(userId, request.getGroupId()).orElseThrow(
                 EntityNotFoundException::new
         );
 
         var group = userGroup.getGroup();
-
         if (userGroup.getIsOwner()) {
             var groupWord = new GroupWord(word, group);
+            if (group.getGroupWords().size() > 20) {
+                throw new LimitedException("words");
+            }
             persistEntity(groupWord);
             return true;
         } else {
@@ -80,7 +85,7 @@ public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, 
     }
 
     public GroupResponse clone(Integer groupId, JwtAuthenticationToken auth) {
-        var user = userService.findById(extractUserId(auth));
+        var user = userRepository.findById(extractUserId(auth)).orElseThrow(UnauthorizationException::new);
         var oldGroup = groupService.findById(groupId);
 
         if (oldGroup.getIsPrivate() && !groupService.isOwner(user.getId(), groupId)) {
@@ -104,5 +109,16 @@ public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, 
         }
 
         return response;
+    }
+
+    public Boolean deleteFromGroup(DeleteWordRequest request, Integer wordId, JwtAuthenticationToken auth) {
+        var userId = extractUserId(auth);
+        var userGroup = userGroupRepository.findByUserIdAndGroupId(userId, request.getGroupId()).orElseThrow(
+                UnauthorizationException::new
+        );
+        if (!userGroup.getIsOwner()) throw new UnauthorizationException();
+
+        groupWordRepository.deleteByGroupIdAndWordId(request.getGroupId(), wordId);
+        return true;
     }
 }
