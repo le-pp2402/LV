@@ -58,9 +58,12 @@ public class BaseService<E extends BaseModel,
     public DTO createDTO(E entity) {
         return baseMapper.toDTO(persistEntity(entity));
     }
-    
+
     public void deleteById(ID Id) {
         repo.deleteById(Id);
     }
 
+    public List<DTO> findByFilter(BaseFilter filter) {
+        return baseMapper.toListDTO(repo.findAll(filter.getPageable()));
+    }
 }

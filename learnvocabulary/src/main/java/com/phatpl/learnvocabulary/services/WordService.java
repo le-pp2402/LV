@@ -20,17 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class WordService extends BaseService<Word, WordResponse, BaseFilter, Integer> {
     WordResponseMapper wordResponseMapper;
     WordRepository wordRepository;
-    UserGroupService userGroupService;
-    GroupWordRepository groupWordRepository;
 
     @Autowired
     public WordService(WordResponseMapper wordResponseMapper, WordRepository wordRepository, UserGroupService userGroupService, GroupWordRepository groupWordRepository) {
         super(wordResponseMapper, wordRepository);
         this.wordResponseMapper = wordResponseMapper;
         this.wordRepository = wordRepository;
-        this.userGroupService = userGroupService;
-        this.groupWordRepository = groupWordRepository;
     }
-
-
+    
 }

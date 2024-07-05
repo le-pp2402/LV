@@ -27,7 +27,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
     @Value("${SECRET_KEY}")
     private String secretKey;
-    private final String[] GET_PERMIT_ALL_URL = {"/login", "/groups"};
+    private final String[] GET_PERMIT_ALL_URL = {"/login", "/groups", "/words/{spring:[0-9]+}"};
     private final String[] POST_PERMIT_ALL_URL = {"/register", "/words/w/**"};
     private final String[] PUT_PERMIT_ALL_URL = {"/verify"};
 

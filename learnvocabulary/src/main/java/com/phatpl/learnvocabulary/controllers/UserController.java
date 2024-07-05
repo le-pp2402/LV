@@ -55,7 +55,7 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
     @Override
     @GetMapping
     @PreAuthorize("hasAuthority(SCOPE_ADMIN)")
-    public ResponseEntity findAll() {
+    public ResponseEntity findAll(UserFilter userFilter) {
         var users = userService.findAllDTO();
         return BuildResponse.ok(users);
     }
