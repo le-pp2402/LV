@@ -4,7 +4,6 @@ import com.phatpl.learnvocabulary.dtos.response.WordResponse;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.WordResponseMapper;
 import com.phatpl.learnvocabulary.models.Word;
-import com.phatpl.learnvocabulary.repositories.GroupWordRepository;
 import com.phatpl.learnvocabulary.repositories.WordRepository;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,10 +21,10 @@ public class WordService extends BaseService<Word, WordResponse, BaseFilter, Int
     WordRepository wordRepository;
 
     @Autowired
-    public WordService(WordResponseMapper wordResponseMapper, WordRepository wordRepository, UserGroupService userGroupService, GroupWordRepository groupWordRepository) {
+    public WordService(WordResponseMapper wordResponseMapper, WordRepository wordRepository) {
         super(wordResponseMapper, wordRepository);
         this.wordResponseMapper = wordResponseMapper;
         this.wordRepository = wordRepository;
     }
-    
+
 }

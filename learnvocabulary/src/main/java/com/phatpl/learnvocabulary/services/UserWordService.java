@@ -72,7 +72,6 @@ public class UserWordService extends BaseService<UserWord, UserWordResponse, Bas
 
     public boolean deleteWords(WordsDeleteRequest request, JwtAuthenticationToken auth) {
         var userId = extractUserId(auth);
-        var user = userRepository.findById(userId).orElseThrow(UnauthorizationException::new);
         userWordRepository.deleteByUserIdAndWordIdIn(userId, request.getWords());
         return true;
     }
@@ -95,7 +94,7 @@ public class UserWordService extends BaseService<UserWord, UserWordResponse, Bas
             wordId.put(result.get(0), true);
         }
         var wordsId = new ArrayList<Integer>();
-        wordId.entrySet().forEach(e -> wordsId.add(e.getKey()));
+        wordId.forEach((key, value) -> wordsId.add(key));
         var response = userWordRepository.findAllByUserIdAndWordIdIn(userId, wordsId);
         return userWordResponseMapper.toListDTO(response);
     }

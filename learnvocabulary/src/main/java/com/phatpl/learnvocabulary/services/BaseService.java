@@ -43,8 +43,7 @@ public class BaseService<E extends BaseModel,
     }
 
     public E findById(Integer id) {
-        var entity = repo.findById((ID) id).orElseThrow(EntityNotFoundException::new);
-        return entity;
+        return repo.findById((ID) id).orElseThrow(EntityNotFoundException::new);
     }
 
     public DTO findDTOById(Integer id) {
