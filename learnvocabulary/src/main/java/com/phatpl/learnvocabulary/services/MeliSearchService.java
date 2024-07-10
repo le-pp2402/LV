@@ -27,7 +27,7 @@ public class MeliSearchService {
             String data = TextToJsonArray.ReadFile(document);
             var content = TextToJsonArray.toJsonArray(data);
             JSONArray array = new JSONArray();
-            ArrayList items = new ArrayList() {{
+            ArrayList<JSONObject> items = new ArrayList<>() {{
                 add(new JSONObject().put("id", uid).put("title", title).put("content", content));
             }};
             array.put(items);

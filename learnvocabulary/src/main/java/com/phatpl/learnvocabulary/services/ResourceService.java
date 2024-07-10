@@ -52,7 +52,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Bas
         var user = userRepository.findById(userid).orElseThrow(UnauthorizationException::new);
         String contextType = request.getSource().getContentType();
         Resource resource = new Resource(request.getTitle(), null, null, null, request.getIsPrivate(), user);
-        MultipartFile file = null;
+        MultipartFile file;
         log.info(contextType);
         if (contextType != null && contextType.startsWith("video")) {
             var result = uploadVideo(request);
@@ -93,7 +93,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Bas
         var results = index.search(keyword).getHits();
         var resources = new ArrayList<Resource>();
         results.forEach(e ->
-                resources.add(resourceRepository.findById((int) Math.round((double) e.get("id"))).get()));
+                resources.add(resourceRepository.findById((int) Math.round((double) e.get("id"))).orElse(null)));
         return resourceResponseMapper.toListDTO(resources);
     }
 }
