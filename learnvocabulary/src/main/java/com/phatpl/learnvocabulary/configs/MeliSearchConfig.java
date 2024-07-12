@@ -2,6 +2,7 @@ package com.phatpl.learnvocabulary.configs;
 
 import com.meilisearch.sdk.Client;
 import com.meilisearch.sdk.Config;
+import com.meilisearch.sdk.Index;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,9 @@ public class MeliSearchConfig {
 
     @Bean
     public com.meilisearch.sdk.Index index() {
-        return client().index("document");
+        Index index = client().index("document");
+        index.updateSortableAttributesSettings(new String[]{"created"});
+        index.updateFilterableAttributesSettings(new String[]{"private"});
+        return index;
     }
 }
