@@ -25,9 +25,24 @@ public class MinIOService {
         this.minioClient = minioClient;
     }
 
+    public String newFileName(String filename) {
+        log.info(filename);
+        String[] words = filename.split("[ ]");
+        StringBuilder str = new StringBuilder();
+        for (var word : words) {
+            word = word.trim();
+            if (word.isEmpty()) continue;
+            str.append(word).append("_");
+        }
+        str.deleteCharAt(str.length() - 1);
+        log.info(str.toString());
+        return str.toString();
+    }
+
     public String uploadVideo(MultipartFile video, String filename) throws Exception {
         String bucket = "videos";
         InputStream input = video.getInputStream();
+        filename = newFileName(filename);
         PutObjectArgs putObj = PutObjectArgs
                 .builder()
                 .contentType(video.getContentType())
@@ -42,6 +57,7 @@ public class MinIOService {
     public String uploadDocument(MultipartFile document, String filename) throws Exception {
         String bucket = "documents";
         InputStream input = document.getInputStream();
+        filename = newFileName(filename);
         PutObjectArgs putObjectArgs = PutObjectArgs
                 .builder()
                 .contentType(document.getContentType())
