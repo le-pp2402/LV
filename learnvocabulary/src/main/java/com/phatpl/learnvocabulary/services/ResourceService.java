@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.ServerException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -149,5 +150,9 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         resource.setIsPrivate(request.getIsPrivate());
         meliSearchService.update(id, resource.getTitle(), resource.getIsPrivate());
         return resourceResponseMapper.toDTO(resource);
+    }
+
+    public InputStream getVideo(String name, String file) throws io.minio.errors.ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        return minIOService.getFile(name + "/video/" + file);
     }
 }

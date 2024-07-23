@@ -1,6 +1,7 @@
 package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.services.MinIOService;
+import com.phatpl.learnvocabulary.services.ResourceService;
 import io.minio.errors.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -13,19 +14,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/video")
 public class VideoController {
-    @Autowired
+
     MinIOService minIOService;
+    ResourceService resourceService;
+
+    @Autowired
+    public VideoController(MinIOService minIOService, ResourceService resourceService) {
+        this.minIOService = minIOService;
+        this.resourceService = resourceService;
+    }
 
     @GetMapping("/{folder}/video/{file}")
     public ResponseEntity loadVideo(@PathVariable("folder") String folder, @PathVariable("file") String file) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        var response = getVideo(folder, file);
+        var response = resourceService.getVideo(folder, file);
         byte[] resource = response.readAllBytes();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -37,8 +44,5 @@ public class VideoController {
         var response = minIOService.getImage(folder + "/thumbnail");
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(response.readAllBytes());
     }
-
-    public InputStream getVideo(String name, String file) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        return minIOService.getFile(name + "/video/" + file);
-    }
+    
 }
