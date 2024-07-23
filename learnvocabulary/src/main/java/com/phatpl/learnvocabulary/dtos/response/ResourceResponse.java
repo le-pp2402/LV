@@ -11,9 +11,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ResourceResponse extends BaseDTO {
     String title;
-    String source;
-    String engsub;
-    String visub;
+    String video;
+    String thumbnail;
+    String enSub;
+    String viSub;
     Boolean isPrivate;
-    String contextType;
 }

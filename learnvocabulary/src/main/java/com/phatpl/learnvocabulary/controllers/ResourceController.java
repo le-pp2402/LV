@@ -8,21 +8,17 @@ import com.phatpl.learnvocabulary.filters.ResourcesFilter;
 import com.phatpl.learnvocabulary.models.Resource;
 import com.phatpl.learnvocabulary.services.ResourceService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
-import io.minio.errors.*;
+import io.minio.errors.MinioException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.simpleframework.xml.core.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.RuntimeMBeanException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -30,13 +26,13 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 @RestController
 @RequestMapping("/resources")
-public class ResourcesController extends BaseController<Resource, ResourceResponse, ResourcesFilter, Integer> {
+public class ResourceController extends BaseController<Resource, ResourceResponse, ResourcesFilter, Integer> {
 
     @Autowired
     private final ResourceService resourceService;
 
     @Autowired
-    public ResourcesController(ResourceService resourceService) {
+    public ResourceController(ResourceService resourceService) {
         super(resourceService);
         this.resourceService = resourceService;
     }
@@ -58,16 +54,10 @@ public class ResourcesController extends BaseController<Resource, ResourceRespon
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable Integer id) {
         try {
-            var response = resourceService.getResources(id);
-            byte[] resource = response.readAllBytes();
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
-            return new ResponseEntity<>(resource, httpHeaders, HttpStatus.OK);
+            return BuildResponse.ok(resourceService.findDTOById(id));
         } catch (EntityNotFoundException e) {
             return BuildResponse.notFound(e.getMessage());
-        } catch (RuntimeMBeanException | ServerException | ErrorResponseException | NoSuchAlgorithmException |
-                 InvalidKeyException | InvalidResponseException | IOException | InsufficientDataException |
-                 XmlParserException | InternalException e) {
+        } catch (RuntimeException e) {
             return BuildResponse.badRequest(e.getMessage());
         }
     }
@@ -84,7 +74,7 @@ public class ResourcesController extends BaseController<Resource, ResourceRespon
     }
 
     @Override
-    @GetMapping
+    @PostMapping
     public ResponseEntity findAll(@RequestBody ResourcesFilter request) {
         try {
             return BuildResponse.ok(
@@ -109,9 +99,8 @@ public class ResourcesController extends BaseController<Resource, ResourceRespon
             return BuildResponse.ok(resourceService.update(request, id));
         } catch (EntityNotFoundException e) {
             return BuildResponse.notFound(e.getMessage());
-        } catch (RuntimeException | ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+        } catch (RuntimeException | IOException | MinioException |
+                 NoSuchAlgorithmException | InvalidKeyException e) {
             return BuildResponse.badRequest(e.getMessage());
         }
     }

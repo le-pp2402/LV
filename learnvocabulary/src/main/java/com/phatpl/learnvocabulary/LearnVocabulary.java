@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 public class LearnVocabulary {
     public static BuildTrie buildTrie = new BuildTrie();
 
-
     public static void main(String[] args) {
         SpringApplication.run(LearnVocabulary.class, args);
     }
