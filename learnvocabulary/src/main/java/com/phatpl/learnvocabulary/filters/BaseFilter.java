@@ -1,5 +1,6 @@
 package com.phatpl.learnvocabulary.filters;
 
+import com.phatpl.learnvocabulary.utils.Constant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,9 +13,8 @@ import org.springframework.data.domain.Pageable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BaseFilter {
-    private Integer pageSize;
+    private final Integer pageSize = Constant.PAGE_SIZE;
     private Integer pageNumber;
-    private String sortBy;
 
     public Pageable getPageable() {
         return PageRequest.of(pageNumber, pageSize);

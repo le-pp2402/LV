@@ -9,6 +9,7 @@ import com.phatpl.learnvocabulary.exceptions.WrongVerifyCode;
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.mappers.RegisterRequestMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
+import com.phatpl.learnvocabulary.models.BaseModel;
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
@@ -17,7 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,8 +61,9 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         return UserResponseMapper.instance.toDTO(user);
     }
 
-    public UserResponse me(Authentication authetication) {
-        User user = userRepository.findByUsername(authetication.getName()).orElseThrow(() -> new BadRequestException("user not found"));
+    public UserResponse me() {
+        var userId = extractUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("user not found"));
         return userResponseMapper.toDTO(user);
     }
 
@@ -74,8 +76,8 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         } else throw new WrongVerifyCode();
     }
 
-    public UserResponse updateUserInfo(String oldPassword, String newPassword, JwtAuthenticationToken auth) {
-        var user = findById(extractUserId(auth));
+    public UserResponse updateUserInfo(String oldPassword, String newPassword) {
+        var user = findById(extractUserId());
         if (BCryptPassword.matches(oldPassword, user.getPassword())) {
             user.setPassword(BCryptPassword.encode(newPassword));
             persistEntity(user);
@@ -83,5 +85,12 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         } else {
             throw new WrongUsernameOrPassword();
         }
+    }
+
+    public Integer extractUserId() {
+        JwtAuthenticationToken JwtAuthToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String username = JwtAuthToken.getName();
+        var user = userRepository.findByUsername(username);
+        return user.map(BaseModel::getId).orElse(null);
     }
 }

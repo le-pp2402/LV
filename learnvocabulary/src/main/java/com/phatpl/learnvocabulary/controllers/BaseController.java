@@ -16,7 +16,7 @@ import java.util.List;
 @MappedSuperclass
 public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends BaseFilter, ID extends Integer> {
     private final BaseService<E, DTO, FT, ID> service;
-
+    
     @Autowired
     public BaseController(BaseService<E, DTO, FT, ID> service) {
         this.service = service;
@@ -28,13 +28,12 @@ public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends
         if (response != null) {
             return BuildResponse.ok(response);
         }
-        return BuildResponse.notFound("not found id" + id);
+        return BuildResponse.notFound(" not found id = " + id);
     }
 
     @GetMapping
-    public ResponseEntity findAll() {
+    public ResponseEntity findAll(FT ft) {
         List<DTO> lst = service.findAllDTO();
         return BuildResponse.ok(lst);
     }
-
 }

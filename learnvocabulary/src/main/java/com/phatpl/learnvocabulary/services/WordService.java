@@ -4,7 +4,6 @@ import com.phatpl.learnvocabulary.dtos.response.WordResponse;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.WordResponseMapper;
 import com.phatpl.learnvocabulary.models.Word;
-import com.phatpl.learnvocabulary.repositories.GroupWordRepository;
 import com.phatpl.learnvocabulary.repositories.WordRepository;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,17 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class WordService extends BaseService<Word, WordResponse, BaseFilter, Integer> {
     WordResponseMapper wordResponseMapper;
     WordRepository wordRepository;
-    UserGroupService userGroupService;
-    GroupWordRepository groupWordRepository;
 
     @Autowired
-    public WordService(WordResponseMapper wordResponseMapper, WordRepository wordRepository, UserGroupService userGroupService, GroupWordRepository groupWordRepository) {
+    public WordService(WordResponseMapper wordResponseMapper, WordRepository wordRepository) {
         super(wordResponseMapper, wordRepository);
         this.wordResponseMapper = wordResponseMapper;
         this.wordRepository = wordRepository;
-        this.userGroupService = userGroupService;
-        this.groupWordRepository = groupWordRepository;
     }
-
 
 }
