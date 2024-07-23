@@ -12,12 +12,14 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Table(name = "resources")
 public class Resource extends BaseModel {
-
     @Column(nullable = false)
     String title;
-    Integer userId;
     String source;
-    String enSub;
-    String viSub;
+    String engsub;
+    String visub;
     Boolean isPrivate;
+    String contextType;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
 }

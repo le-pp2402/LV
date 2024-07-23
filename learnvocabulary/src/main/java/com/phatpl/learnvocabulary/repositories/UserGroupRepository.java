@@ -17,7 +17,9 @@ public interface UserGroupRepository extends BaseRepository<UserGroup, BaseFilte
 
     Optional<UserGroup> findByUserIdAndGroupId(Integer userId, Integer groupId);
 
-    void deleteByUserIdAndGroupId(Integer userId, Integer groupId);
-
     void deleteByGroupId(Integer groupId);
+
+    void deleteByGroupIdAndUserIdNot(Integer groupId, Integer userId);
+
+    void deleteByUserIdAndGroupId(Integer userId, Integer groupId);
 }

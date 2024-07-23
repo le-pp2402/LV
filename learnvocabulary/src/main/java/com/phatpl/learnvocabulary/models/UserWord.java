@@ -12,15 +12,26 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Table(name = "user_word")
 public class UserWord extends BaseModel {
-
-    @Column(name = "user_id", insertable=false, updatable=false)
-    Integer userId;
-    @Column(name = "word_id", insertable=false, updatable=false)
-    Integer wordId;
+    @Column(name = "`rank`")
     Integer rank;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
 
+    @ManyToOne
+    @JoinColumn(name = "word_id")
+    Word word;
+
+    public void AnswerCorrect() {
+        this.setRank(Math.min(this.getRank() + 1, 5));
+    }
+
+    public void AnswerWrong() {
+        this.setRank(1);
+    }
+
+    public void ExpiredTime() {
+        this.setRank(Math.max(1, this.getRank() - 1));
+    }
 }

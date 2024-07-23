@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GroupResponse extends BaseDTO {
-    String name;
-    Boolean isPrivate;
+    private String name;
+    private Boolean isPrivate;
 }

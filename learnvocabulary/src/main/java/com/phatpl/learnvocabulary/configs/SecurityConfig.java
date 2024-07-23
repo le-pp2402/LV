@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,8 +27,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
     @Value("${SECRET_KEY}")
     private String secretKey;
-    private final String[] GET_PERMIT_ALL_URL = {"/login"};
-    private final String[] POST_PERMIT_ALL_URL = {"/register"};
+    private final String[] GET_PERMIT_ALL_URL = {"/login", "/groups", "/words/{spring:[0-9]+}", "/resources", "/resources/{spring:[0-9]+}"};
+    private final String[] POST_PERMIT_ALL_URL = {"/register", "/words/w/**"};
     private final String[] PUT_PERMIT_ALL_URL = {"/verify"};
 
 
@@ -44,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, PUT_PERMIT_ALL_URL).permitAll()
                         .anyRequest().authenticated()
                 );
+
+        http.cors(Customizer.withDefaults());
 
         http.oauth2ResourceServer(auth -> auth.jwt(
                 jwtDecoder -> jwtDecoder.decoder(jwtDecoder())

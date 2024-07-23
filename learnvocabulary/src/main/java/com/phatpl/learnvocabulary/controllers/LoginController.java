@@ -27,8 +27,8 @@ public class LoginController {
     public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
         try {
             return BuildResponse.ok(authService.login(loginRequest));
-        } catch (Exception e) {
-            return BuildResponse.badRequest(e.getMessage());
+        } catch (RuntimeException e) {
+            return BuildResponse.unauthorized(e.getMessage());
         }
     }
 }

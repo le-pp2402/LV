@@ -10,8 +10,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WordResponse extends BaseDTO {
-    String word;
-    String phonetic;
-    String definition;
-    String example;
+    private String word;
+    private String phonetic;
+    private String definition;
+    private String example;
 }

@@ -2,9 +2,12 @@ package com.phatpl.learnvocabulary.configs;
 
 import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
+import com.phatpl.learnvocabulary.repositories.WordRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.CustomUserDetail;
+import com.phatpl.learnvocabulary.utils.Trie.BuildTrie;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,11 +19,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
+    private final WordRepository wordRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -58,6 +63,13 @@ public class ApplicationConfig {
                 user.setEmail("admin123@gmail.com");
                 userRepository.save(user);
             }
+            var words = wordRepository.findAll();
+            for (var word : words) {
+                BuildTrie.addWord(word.getId(), word.getWord());
+                BuildTrie.mapWords.put(word.getId(), word);
+            }
+            BuildTrie.merge(0);
+            log.info("INIT FINISHED, TRIE SIZE = " + BuildTrie.Trie.size());
         };
     }
 }

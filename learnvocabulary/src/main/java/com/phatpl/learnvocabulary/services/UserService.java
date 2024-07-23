@@ -13,22 +13,23 @@ import com.phatpl.learnvocabulary.models.User;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.MailUtil;
-import jakarta.persistence.EntityNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @Transactional
+@Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Getter
 public class UserService extends BaseService<User, UserResponse, UserFilter, Integer> {
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
-    private final UserRepository userRepository;
-    private final MailService mailService;
-    private final UserResponseMapper userResponseMapper;
+    UserRepository userRepository;
+    MailService mailService;
+    UserResponseMapper userResponseMapper;
 
     @Autowired
     public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService) {
@@ -53,7 +54,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         user.setCode(MailUtil.genCode());
         user.setActivated(false);
 
-        userRepository.save(user);
+        persistEntity(user);
         mailService.sendEmail(MailUtil.genMail(user.getEmail(), user.getCode()));
 
         return UserResponseMapper.instance.toDTO(user);
@@ -69,18 +70,15 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
             var user = optUser.get();
             user.setActivated(true);
-            return userResponseMapper.toDTO(userRepository.save(user));
+            return userResponseMapper.toDTO(persistEntity(user));
         } else throw new WrongVerifyCode();
     }
 
-    public UserResponse updateUserInfo(String oldPassword, String newPassword) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(EntityNotFoundException::new);
-        log.info(user.getPassword());
-        log.info(BCryptPassword.encode(oldPassword));
+    public UserResponse updateUserInfo(String oldPassword, String newPassword, JwtAuthenticationToken auth) {
+        var user = findById(extractUserId(auth));
         if (BCryptPassword.matches(oldPassword, user.getPassword())) {
             user.setPassword(BCryptPassword.encode(newPassword));
-            userRepository.save(user);
+            persistEntity(user);
             return userResponseMapper.toDTO(user);
         } else {
             throw new WrongUsernameOrPassword();

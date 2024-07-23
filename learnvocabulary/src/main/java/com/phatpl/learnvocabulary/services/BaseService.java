@@ -29,39 +29,40 @@ public class BaseService<E extends BaseModel,
         this.repo = repo;
     }
 
-    public List<E> findAll() {
-        return repo.findAll();
-    }
-
     public Integer extractUserId(JwtAuthenticationToken jwtAuth) {
         var data = (LinkedTreeMap<String, Object>) jwtAuth.getTokenAttributes().get("data");
         return ((Long) data.get("id")).intValue();
     }
 
-    public E findById(Integer id) {
-        var entity = repo.findById((ID) id).orElseThrow(EntityNotFoundException::new);
-        return entity;
-    }
-
-    public DTO save(E entity) {
-        return baseMapper.toDTO(repo.save(entity));
-    }
-
-    public DTO update(E entity) {
-        return baseMapper.toDTO(repo.save(entity));
+    public List<E> findAll() {
+        return repo.findAll();
     }
 
     public List<DTO> findAllDTO() {
         return baseMapper.toListDTO(repo.findAll());
     }
 
-    public DTO findByIdDTO(Integer id) {
-        return baseMapper.toDTO(this.findById(id));
+    public E findById(Integer id) {
+        return repo.findById((ID) id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public DTO findDTOById(Integer id) {
+        return baseMapper.toDTO(findById(id));
+    }
+
+    public E persistEntity(E entity) {
+        return repo.save(entity);
+    }
+
+    public DTO createDTO(E entity) {
+        return baseMapper.toDTO(persistEntity(entity));
     }
 
     public void deleteById(ID Id) {
         repo.deleteById(Id);
     }
 
-
+    public List<DTO> findByFilter(BaseFilter filter) {
+        return baseMapper.toListDTO(repo.findAll(filter.getPageable()));
+    }
 }

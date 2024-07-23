@@ -10,7 +10,9 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +33,9 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
     @PutMapping("/me")
     public ResponseEntity updateUserInfo(@Valid @RequestBody UpdatePasswordRequest request) {
         try {
+            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
             return BuildResponse.ok(userService.updateUserInfo(
-                    request.getOldPassword(), request.getNewPassword()
+                    request.getOldPassword(), request.getNewPassword(), auth
             ));
         } catch (Exception e) {
             return BuildResponse.badRequest(e.getMessage());
@@ -48,4 +51,13 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
             return BuildResponse.unauthorized(e.getMessage());
         }
     }
+
+    @Override
+    @GetMapping
+    @PreAuthorize("hasAuthority(SCOPE_ADMIN)")
+    public ResponseEntity findAll(UserFilter userFilter) {
+        var users = userService.findAllDTO();
+        return BuildResponse.ok(users);
+    }
+
 }
