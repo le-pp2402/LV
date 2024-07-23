@@ -1,6 +1,6 @@
-package com.phatpl.learnvocabulary.models;
+package com.phatpl.learnvocabulary.dtos.response;
 
-import jakarta.persistence.*;
+import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,17 +9,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-@Table(name = "resources")
-public class Resource extends BaseModel {
-    @Column(nullable = false)
+public class ResourceResponse extends BaseDTO {
     String title;
     String source;
     String engsub;
     String visub;
     Boolean isPrivate;
     String contextType;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    User user;
 }
