@@ -15,8 +15,6 @@ import org.simpleframework.xml.core.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -41,8 +39,7 @@ public class ResourceController extends BaseController<Resource, ResourceRespons
     @PostMapping("/upload")
     public ResponseEntity upload(@ModelAttribute @Validate UploadResourceRequest request) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(resourceService.save(request, auth));
+            return BuildResponse.ok(resourceService.save(request));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {

@@ -1,6 +1,5 @@
 package com.phatpl.learnvocabulary.services;
 
-import com.nimbusds.jose.shaded.gson.internal.LinkedTreeMap;
 import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.BaseMapper;
@@ -10,7 +9,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.MappedSuperclass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.List;
 
@@ -27,11 +25,6 @@ public class BaseService<E extends BaseModel,
     public BaseService(BaseMapper<E, DTO> baseMapper, BaseRepository<E, FT, ID> repo) {
         this.baseMapper = baseMapper;
         this.repo = repo;
-    }
-
-    public Integer extractUserId(JwtAuthenticationToken jwtAuth) {
-        var data = (LinkedTreeMap<String, Object>) jwtAuth.getTokenAttributes().get("data");
-        return ((Long) data.get("id")).intValue();
     }
 
     public List<E> findAll() {

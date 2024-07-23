@@ -21,9 +21,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +32,6 @@ import java.util.List;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
-@Slf4j
 public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, BaseFilter, Integer> {
     GroupWordRepository groupWordRepository;
     GroupWordResponseMapper groupWordResponseMapper;
@@ -43,9 +40,10 @@ public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, 
     UserRepository userRepository;
     UserGroupRepository userGroupRepository;
     UserWordRepository userWordRepository;
+    UserService userService;
 
     @Autowired
-    public GroupWordService(GroupWordRepository groupWordRepository, GroupWordResponseMapper groupWordResponseMapper, WordService wordService, GroupService groupService, UserRepository userRepository, UserGroupRepository userGroupRepository, UserWordRepository userWordRepository) {
+    public GroupWordService(GroupWordRepository groupWordRepository, GroupWordResponseMapper groupWordResponseMapper, WordService wordService, GroupService groupService, UserRepository userRepository, UserGroupRepository userGroupRepository, UserWordRepository userWordRepository, UserService userService) {
         super(groupWordResponseMapper, groupWordRepository);
         this.groupWordRepository = groupWordRepository;
         this.groupWordResponseMapper = groupWordResponseMapper;
@@ -54,10 +52,11 @@ public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, 
         this.userGroupRepository = userGroupRepository;
         this.groupService = groupService;
         this.userWordRepository = userWordRepository;
+        this.userService = userService;
     }
 
-    public Boolean saveIntoGroup(SaveWordRequest request, Integer wordId, JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public Boolean saveIntoGroup(SaveWordRequest request, Integer wordId) {
+        var userId = userService.extractUserId();
         var user = userRepository.findById(userId).orElseThrow(UnauthorizationException::new);
         var word = wordService.findById(wordId);
         var userGroup = userGroupRepository.findByUserIdAndGroupId(userId, request.getGroupId()).orElseThrow(
@@ -83,8 +82,8 @@ public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, 
         }
     }
 
-    public List<WordResponse> getWordsOfGroup(Integer groupId, JwtAuthenticationToken auth) {
-        Integer userId = extractUserId(auth);
+    public List<WordResponse> getWordsOfGroup(Integer groupId) {
+        Integer userId = userService.extractUserId();
         Group group = groupService.findById(groupId);
         if (!group.getIsPrivate() || groupService.isOwner(userId, groupId)) {
             var words = new ArrayList<WordResponse>();
@@ -97,8 +96,8 @@ public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, 
         }
     }
 
-    public GroupResponse clone(Integer groupId, JwtAuthenticationToken auth) {
-        var user = userRepository.findById(extractUserId(auth)).orElseThrow(UnauthorizationException::new);
+    public GroupResponse clone(Integer groupId) {
+        var user = userRepository.findById(userService.extractUserId()).orElseThrow(UnauthorizationException::new);
         var oldGroup = groupService.findById(groupId);
 
         if (oldGroup.getIsPrivate() && !groupService.isOwner(user.getId(), groupId)) {
@@ -128,13 +127,12 @@ public class GroupWordService extends BaseService<GroupWord, GroupWordResponse, 
         return response;
     }
 
-    public Boolean deleteFromGroup(DeleteWordRequest request, Integer wordId, JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public Boolean deleteFromGroup(DeleteWordRequest request, Integer wordId) {
+        var userId = userService.extractUserId();
         var userGroup = userGroupRepository.findByUserIdAndGroupId(userId, request.getGroupId()).orElseThrow(
                 UnauthorizationException::new
         );
         if (!userGroup.getIsOwner()) throw new UnauthorizationException();
-
         groupWordRepository.deleteByGroupIdAndWordId(request.getGroupId(), wordId);
         return true;
     }

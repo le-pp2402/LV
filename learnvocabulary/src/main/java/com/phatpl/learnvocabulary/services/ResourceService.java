@@ -18,7 +18,6 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,19 +42,22 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
     MinIOService minIOService;
     UserRepository userRepository;
     MeliSearchService meliSearchService;
+    UserService userService;
+
 
     @Autowired
-    public ResourceService(ResourceRepository resourceRepository, ResourceResponseMapper resourceResponseMapper, MinIOService minIOService, UserRepository userRepository, MeliSearchService meliSearchService, Index index) {
+    public ResourceService(ResourceRepository resourceRepository, ResourceResponseMapper resourceResponseMapper, MinIOService minIOService, UserRepository userRepository, MeliSearchService meliSearchService, Index index, UserService userService) {
         super(resourceResponseMapper, resourceRepository);
         this.resourceRepository = resourceRepository;
         this.resourceResponseMapper = resourceResponseMapper;
         this.minIOService = minIOService;
         this.userRepository = userRepository;
         this.meliSearchService = meliSearchService;
+        this.userService = userService;
     }
 
-    public ResourceResponse save(UploadResourceRequest req, JwtAuthenticationToken auth) throws Exception {
-        Integer userid = extractUserId(auth);
+    public ResourceResponse save(UploadResourceRequest req) throws Exception {
+        Integer userid = userService.extractUserId();
         var user = userRepository.findById(userid).orElseThrow(UnauthorizationException::new);
         String contextType = req.getVideo().getContentType();
 
