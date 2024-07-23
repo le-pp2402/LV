@@ -15,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,14 +29,16 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
     GroupRepository groupRepository;
     UserRepository userRepository;
     UserGroupRepository userGroupRepository;
+    UserService userService;
 
     @Autowired
-    public GroupService(GroupRepository groupRepository, GroupResponseMapper groupResponseMapper, UserRepository userRepository, UserGroupRepository userGroupRepository) {
+    public GroupService(GroupRepository groupRepository, GroupResponseMapper groupResponseMapper, UserRepository userRepository, UserGroupRepository userGroupRepository, UserService userService) {
         super(groupResponseMapper, groupRepository);
         this.groupRepository = groupRepository;
         this.groupResponseMapper = groupResponseMapper;
         this.userRepository = userRepository;
         this.userGroupRepository = userGroupRepository;
+        this.userService = userService;
     }
 
     public Boolean isOwner(Integer userId, Integer groupId) {
@@ -45,8 +46,8 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
         return userGroup.isPresent() && userGroup.get().getIsOwner();
     }
 
-    public List<GroupResponse> findGroupByUser(JwtAuthenticationToken jwtAuth) {
-        var userId = extractUserId(jwtAuth);
+    public List<GroupResponse> findGroupByUser() {
+        var userId = userService.extractUserId();
         User user = userRepository.findById(userId).orElseThrow(
                 EntityNotFoundException::new
         );
@@ -54,8 +55,8 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
         return groupResponseMapper.toListDTO(groups);
     }
 
-    public GroupResponse updateGroupInfo(Integer groupId, UpdateGroupRequest updateGroupRequest, JwtAuthenticationToken jwtAuth) {
-        var userId = extractUserId(jwtAuth);
+    public GroupResponse updateGroupInfo(Integer groupId, UpdateGroupRequest updateGroupRequest) {
+        var userId = userService.extractUserId();
         if (!isOwner(userId, groupId)) throw new UnauthorizationException();
         var group = findById(groupId);
         group.setName(updateGroupRequest.getName());
@@ -65,9 +66,4 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
         }
         return createDTO(group);
     }
-
-//    public List<GroupResponse> findByFilter(GroupFilter groupFilter) {
-//        var groups = groupRepository.findAll(groupFilter.getPageable());
-//        return groupResponseMapper.toListDTO(groups);
-//    }
 }

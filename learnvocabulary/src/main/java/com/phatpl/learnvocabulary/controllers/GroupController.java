@@ -17,8 +17,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,8 +55,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
             return BuildResponse.badRequest(error.getDefaultMessage());
         }
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.created(userGroupService.create(createGroupRequest, auth));
+            return BuildResponse.created(userGroupService.create(createGroupRequest));
         } catch (RuntimeException e) {
             return BuildResponse.badRequest(e.getMessage());
         }
@@ -67,8 +64,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     @GetMapping("/me")
     public ResponseEntity findGroupByUser() {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(groupService.findGroupByUser(auth));
+            return BuildResponse.ok(groupService.findGroupByUser());
         } catch (RuntimeException e) {
             return BuildResponse.badRequest(e.getMessage());
         }
@@ -77,8 +73,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     @PutMapping("/{id}")
     public ResponseEntity updateGroupInfo(@PathVariable("id") Integer groupId, @RequestBody UpdateGroupRequest updateGroupRequest) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(groupService.updateGroupInfo(groupId, updateGroupRequest, auth));
+            return BuildResponse.ok(groupService.updateGroupInfo(groupId, updateGroupRequest));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -90,8 +85,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Integer groupId) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(groupWordService.getWordsOfGroup(groupId, auth));
+            return BuildResponse.ok(groupWordService.getWordsOfGroup(groupId));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -102,8 +96,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable("id") Integer groupId) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            userGroupService.delete(groupId, auth);
+            userGroupService.delete(groupId);
             return BuildResponse.ok("deleted group id = " + groupId);
         } catch (Exception e) {
             return BuildResponse.forbidden(e.getMessage());
@@ -113,8 +106,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     @PostMapping("/{id}/follow")
     public ResponseEntity followGroup(@NotNull @PathVariable("id") Integer groupId) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(userGroupService.follow(groupId, auth));
+            return BuildResponse.ok(userGroupService.follow(groupId));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -125,8 +117,7 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
     @PostMapping("/{id}/clone")
     public ResponseEntity cloneGroup(@NotNull @PathVariable("id") Integer groupId) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(groupWordService.clone(groupId, auth));
+            return BuildResponse.ok(groupWordService.clone(groupId));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {

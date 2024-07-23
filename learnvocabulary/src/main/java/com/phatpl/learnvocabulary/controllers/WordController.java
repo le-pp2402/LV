@@ -16,8 +16,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,9 +51,9 @@ public class WordController extends BaseController<Word, WordResponse, BaseFilte
     @PostMapping("/{id}")
     public ResponseEntity saveIntoGroup(@RequestBody SaveWordRequest request, @PathVariable("id") Integer wordId) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+
             return BuildResponse.ok(
-                    groupWordService.saveIntoGroup(request, wordId, auth)
+                    groupWordService.saveIntoGroup(request, wordId)
             );
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
@@ -67,8 +65,8 @@ public class WordController extends BaseController<Word, WordResponse, BaseFilte
     @DeleteMapping("/{id}")
     public ResponseEntity deleteFromGroup(@RequestBody DeleteWordRequest request, @PathVariable("id") Integer wordId) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(groupWordService.deleteFromGroup(request, wordId, auth));
+
+            return BuildResponse.ok(groupWordService.deleteFromGroup(request, wordId));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -84,8 +82,8 @@ public class WordController extends BaseController<Word, WordResponse, BaseFilte
     @GetMapping("/me")
     public ResponseEntity getWordsOfUser() {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(userWordService.getWordsOfUser(auth));
+
+            return BuildResponse.ok(userWordService.getWordsOfUser());
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -96,8 +94,7 @@ public class WordController extends BaseController<Word, WordResponse, BaseFilte
     @GetMapping("/me/{id}")
     public ResponseEntity getWordOfUser(@PathVariable("id") Integer wordId) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(userWordService.getWordOfUser(wordId, auth));
+            return BuildResponse.ok(userWordService.getWordOfUser(wordId));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -110,8 +107,7 @@ public class WordController extends BaseController<Word, WordResponse, BaseFilte
     @PostMapping("/me")
     public ResponseEntity saveWordsOfUser(@RequestBody WordsSaveRequest request) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(userWordService.saveWords(request, auth));
+            return BuildResponse.ok(userWordService.saveWords(request));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -122,8 +118,7 @@ public class WordController extends BaseController<Word, WordResponse, BaseFilte
     @DeleteMapping("/me")
     public ResponseEntity deleteWordsOfUser(@RequestBody WordsDeleteRequest request) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(userWordService.deleteWords(request, auth));
+            return BuildResponse.ok(userWordService.deleteWords(request));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {
@@ -134,8 +129,8 @@ public class WordController extends BaseController<Word, WordResponse, BaseFilte
     @PutMapping("/me")
     public ResponseEntity answer(@RequestBody ResultRequest request) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(userWordService.answer(request, auth));
+
+            return BuildResponse.ok(userWordService.answer(request));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (RuntimeException e) {

@@ -19,7 +19,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,9 +33,10 @@ public class UserGroupService extends BaseService<UserGroup, UserGroupResponse, 
     UserRepository userRepository;
     GroupWordRepository groupWordRepository;
     UserWordRepository userWordRepository;
+    UserService userService;
 
     @Autowired
-    public UserGroupService(UserGroupResponseMapper userGroupResponseMapper, UserGroupRepository userGroupRepository, GroupService groupService, UserRepository userRepository, GroupWordRepository groupWordRepository, UserWordRepository userWordRepository) {
+    public UserGroupService(UserGroupResponseMapper userGroupResponseMapper, UserGroupRepository userGroupRepository, GroupService groupService, UserRepository userRepository, GroupWordRepository groupWordRepository, UserWordRepository userWordRepository, UserService userService) {
         super(userGroupResponseMapper, userGroupRepository);
         this.userGroupResponseMapper = userGroupResponseMapper;
         this.userGroupRepository = userGroupRepository;
@@ -44,6 +44,7 @@ public class UserGroupService extends BaseService<UserGroup, UserGroupResponse, 
         this.userRepository = userRepository;
         this.groupWordRepository = groupWordRepository;
         this.userWordRepository = userWordRepository;
+        this.userService = userService;
     }
 
     public Boolean isOwner(Integer userId, Integer groupId) {
@@ -51,8 +52,8 @@ public class UserGroupService extends BaseService<UserGroup, UserGroupResponse, 
         return userGroup.isPresent() && userGroup.get().getIsOwner();
     }
 
-    public GroupResponse create(CreateGroupRequest request, JwtAuthenticationToken auth) {
-        Integer userId = extractUserId(auth);
+    public GroupResponse create(CreateGroupRequest request) {
+        Integer userId = userService.extractUserId();
         if (userGroupRepository.numberOfGroups(userId) > 20) {
             throw new LimitedException("groups");
         }
@@ -64,8 +65,8 @@ public class UserGroupService extends BaseService<UserGroup, UserGroupResponse, 
         return groupDTO;
     }
 
-    public void delete(Integer groupId, JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public void delete(Integer groupId) {
+        var userId = userService.extractUserId();
         if (isOwner(userId, groupId)) {
             userGroupRepository.deleteByGroupId(groupId);
             groupService.deleteById(userId);
@@ -74,8 +75,8 @@ public class UserGroupService extends BaseService<UserGroup, UserGroupResponse, 
         }
     }
 
-    public UserGroupResponse follow(Integer groupId, JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public UserGroupResponse follow(Integer groupId) {
+        var userId = userService.extractUserId();
         var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         var userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
         if (userGroup.isPresent())

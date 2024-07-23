@@ -17,7 +17,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,15 +35,16 @@ public class UserWordService extends BaseService<UserWord, UserWordResponse, Bas
     UserWordResponseMapper userWordResponseMapper;
     UserRepository userRepository;
     WordRepository wordRepository;
-
+    UserService userService;
 
     @Autowired
-    public UserWordService(UserWordRepository userWordRepository, UserWordResponseMapper userWordResponseMapper, UserRepository userRepository, WordRepository wordRepository) {
+    public UserWordService(UserWordRepository userWordRepository, UserWordResponseMapper userWordResponseMapper, UserRepository userRepository, WordRepository wordRepository, UserService userService) {
         super(userWordResponseMapper, userWordRepository);
         this.userWordRepository = userWordRepository;
         this.userWordResponseMapper = userWordResponseMapper;
         this.userRepository = userRepository;
         this.wordRepository = wordRepository;
+        this.userService = userService;
     }
 
     public UserWord getByUserAndWordId(User user, Integer wordId) {
@@ -59,8 +59,8 @@ public class UserWordService extends BaseService<UserWord, UserWordResponse, Bas
         return userWordRepository.save(userWord);
     }
 
-    public boolean saveWords(WordsSaveRequest request, JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public boolean saveWords(WordsSaveRequest request) {
+        var userId = userService.extractUserId();
         var user = userRepository.findById(userId).orElseThrow(UnauthorizationException::new);
         var words = request.getWords();
         for (var id : words) {
@@ -70,14 +70,14 @@ public class UserWordService extends BaseService<UserWord, UserWordResponse, Bas
     }
 
 
-    public boolean deleteWords(WordsDeleteRequest request, JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public boolean deleteWords(WordsDeleteRequest request) {
+        var userId = userService.extractUserId();
         userWordRepository.deleteByUserIdAndWordIdIn(userId, request.getWords());
         return true;
     }
 
-    public List<UserWordResponse> answer(ResultRequest request, JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public List<UserWordResponse> answer(ResultRequest request) {
+        var userId = userService.extractUserId();
         var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
 
         Map<Integer, Boolean> wordId = new HashMap<>();
@@ -99,15 +99,15 @@ public class UserWordService extends BaseService<UserWord, UserWordResponse, Bas
         return userWordResponseMapper.toListDTO(response);
     }
 
-    public List<UserWordResponse> getWordsOfUser(JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public List<UserWordResponse> getWordsOfUser() {
+        var userId = userService.extractUserId();
         var words = userWordRepository.findByUserId(userId);
         return UserWordResponseMapper.instance.toListDTO(words);
     }
 
 
-    public UserWordResponse getWordOfUser(Integer wordId, JwtAuthenticationToken auth) {
-        var userId = extractUserId(auth);
+    public UserWordResponse getWordOfUser(Integer wordId) {
+        var userId = userService.extractUserId();
         var userWord = userWordRepository.findByUserIdAndWordId(userId, wordId).orElseThrow(EntityNotFoundException::new);
         return userWordResponseMapper.toDTO(userWord);
     }
