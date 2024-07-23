@@ -43,8 +43,7 @@ public class BaseService<E extends BaseModel,
     }
 
     public E findById(Integer id) {
-        var entity = repo.findById((ID) id).orElseThrow(EntityNotFoundException::new);
-        return entity;
+        return repo.findById((ID) id).orElseThrow(EntityNotFoundException::new);
     }
 
     public DTO findDTOById(Integer id) {
@@ -58,9 +57,12 @@ public class BaseService<E extends BaseModel,
     public DTO createDTO(E entity) {
         return baseMapper.toDTO(persistEntity(entity));
     }
-    
+
     public void deleteById(ID Id) {
         repo.deleteById(Id);
     }
 
+    public List<DTO> findByFilter(BaseFilter filter) {
+        return baseMapper.toListDTO(repo.findAll(filter.getPageable()));
+    }
 }

@@ -39,6 +39,17 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
         this.groupWordService = groupWordService;
     }
 
+    @Override
+    @GetMapping
+    public ResponseEntity findAll(GroupFilter groupFilter) {
+        var groups = groupService.findByFilter(groupFilter);
+        if (groups == null || groups.isEmpty()) {
+            return BuildResponse.notFound(groups);
+        } else {
+            return BuildResponse.ok(groups);
+        }
+    }
+
     @PostMapping("/me")
     public ResponseEntity createGroup(@RequestBody @Valid CreateGroupRequest createGroupRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -74,7 +85,6 @@ public class GroupController extends BaseController<Group, GroupResponse, GroupF
             return BuildResponse.badRequest(e.getMessage());
         }
     }
-
 
     @Override
     @GetMapping("/{id}")

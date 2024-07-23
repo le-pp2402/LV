@@ -66,4 +66,8 @@ public class GroupService extends BaseService<Group, GroupResponse, GroupFilter,
         return createDTO(group);
     }
 
+//    public List<GroupResponse> findByFilter(GroupFilter groupFilter) {
+//        var groups = groupRepository.findAll(groupFilter.getPageable());
+//        return groupResponseMapper.toListDTO(groups);
+//    }
 }

@@ -5,7 +5,6 @@ import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.repositories.WordRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.CustomUserDetail;
-import com.phatpl.learnvocabulary.utils.RadixTrie.PruningRadixTrie;
 import com.phatpl.learnvocabulary.utils.Trie.BuildTrie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,11 +67,9 @@ public class ApplicationConfig {
             for (var word : words) {
                 BuildTrie.addWord(word.getId(), word.getWord());
                 BuildTrie.mapWords.put(word.getId(), word);
-                String compressedWord = word.getWord() + word.getId().toString();
-                PruningRadixTrie.addTerm(compressedWord, 1);
             }
             BuildTrie.merge(0);
-            log.info("init finished");
+            log.info("INIT FINISHED, TRIE SIZE = " + BuildTrie.Trie.size());
         };
     }
 }

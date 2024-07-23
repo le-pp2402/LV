@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -28,13 +29,12 @@ public class BaseController<E extends BaseModel, DTO extends BaseDTO, FT extends
         if (response != null) {
             return BuildResponse.ok(response);
         }
-        return BuildResponse.notFound("not found id" + id);
+        return BuildResponse.notFound(" not found id = " + id);
     }
 
     @GetMapping
-    public ResponseEntity findAll() {
+    public ResponseEntity findAll(@RequestBody FT ft) {
         List<DTO> lst = service.findAllDTO();
         return BuildResponse.ok(lst);
     }
-
 }

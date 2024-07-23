@@ -17,7 +17,6 @@ public class Friend extends BaseModel {
     Integer user1Id;
     @Column(name = "user_2_id", insertable = false, updatable = false)
     Integer user2Id;
-    Boolean status;
 
     @ManyToOne
     @JoinColumn(name = "user_1_id")
@@ -27,4 +26,5 @@ public class Friend extends BaseModel {
     @JoinColumn(name = "user_2_id")
     User user2;
 
+    Boolean status;
 }

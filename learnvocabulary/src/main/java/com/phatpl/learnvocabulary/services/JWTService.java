@@ -71,9 +71,7 @@ public class JWTService {
                 throw new ExpiredException("token");
             }
             return signedJWT.verify(jwsVerifier);
-        } catch (ParseException e) {
-            throw new RuntimeException(e.getMessage());
-        } catch (JOSEException e) {
+        } catch (ParseException | JOSEException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
