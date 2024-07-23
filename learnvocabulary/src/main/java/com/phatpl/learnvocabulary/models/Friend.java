@@ -1,6 +1,9 @@
 package com.phatpl.learnvocabulary.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,11 +15,6 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Table(name = "friends")
 public class Friend extends BaseModel {
-
-    @Column(name = "user_1_id", insertable = false, updatable = false)
-    Integer user1Id;
-    @Column(name = "user_2_id", insertable = false, updatable = false)
-    Integer user2Id;
 
     @ManyToOne
     @JoinColumn(name = "user_1_id")

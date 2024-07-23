@@ -72,4 +72,5 @@ public class ApplicationConfig {
             log.info("INIT FINISHED, TRIE SIZE = " + BuildTrie.Trie.size());
         };
     }
+    
 }
