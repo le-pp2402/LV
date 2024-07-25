@@ -22,9 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.ServerException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -83,7 +82,6 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         }
     }
 
-
     private HashMap<String, String> uploadVideo(MultipartFile video, MultipartFile enSub, MultipartFile viSub, MultipartFile thumbnail) throws Exception {
         var baseDir = String.valueOf(System.currentTimeMillis());
         var mediaInfo = new HashMap<String, String>();
@@ -113,7 +111,6 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
 
         return mediaInfo;
     }
-
 
     // https://www.meilisearch.com/docs/reference/api/search#search-parameters
     public List<ResourceResponse> search(ResourcesFilter request) {
@@ -146,7 +143,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         resourceRepository.deleteAll();
     }
 
-    public ResourceResponse update(UpdateResourceRequest request, Integer id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public ResourceResponse update(UpdateResourceRequest request, Integer id) throws InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         var resource = resourceRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         resource.setTitle(request.getTitle());
         resource.setIsPrivate(request.getIsPrivate());
@@ -156,5 +153,29 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
 
     public InputStream getVideo(String name, String file) throws io.minio.errors.ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         return minIOService.getFile(name + "/video/" + file);
+    }
+
+    public String readSubFile(Integer id) throws Exception {
+        var resource = resourceRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        var input = minIOService.getFile(resource.getEnSub());
+
+        StringBuilder summarize = new StringBuilder();
+        try (Reader reader = new BufferedReader(new InputStreamReader
+                (input, StandardCharsets.UTF_8))) {
+            int c = 0;
+            while ((c = reader.read()) != -1) {
+                if (Character.isLetter(c) || Character.isSpaceChar(c) || Character.isDigit(c))
+                    summarize.append((char) c);
+                else
+                    summarize.append(' ');
+            }
+        }
+        return summarize.toString();
+    }
+
+    public ResourceResponse setSummarize(Integer id, String summarize) {
+        var resource = resourceRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        resource.setSummarize(summarize);
+        return resourceResponseMapper.toDTO(resource);
     }
 }

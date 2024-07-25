@@ -12,4 +12,9 @@ public class Constant {
 
     public final static String POSTER = "00:00:00.001";
     public final static String TS_SECONDS = "30";
+
+    public final static String PROMT_PREFIX = "{\"contents\":[{\"parts\":[{\"text\":\"";
+    public final static String PROMT_SUFFIX = "\"}]}]}";
+
+    public final static String CT_APPLICATION_JSON = "application/json";
 }
