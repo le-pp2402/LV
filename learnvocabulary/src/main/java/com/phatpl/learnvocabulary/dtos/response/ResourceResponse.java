@@ -16,4 +16,5 @@ public class ResourceResponse extends BaseDTO {
     String enSub;
     String viSub;
     Boolean isPrivate;
+    String summarize;
 }

@@ -19,6 +19,8 @@ public class Resource extends BaseModel {
     String enSub;
     String viSub;
     Boolean isPrivate;
+    @Column(columnDefinition = "LONGTEXT")
+    String summarize;
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;

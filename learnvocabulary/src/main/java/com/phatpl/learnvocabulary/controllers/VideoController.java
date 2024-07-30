@@ -2,7 +2,7 @@ package com.phatpl.learnvocabulary.controllers;
 
 import com.phatpl.learnvocabulary.services.MinIOService;
 import com.phatpl.learnvocabulary.services.ResourceService;
-import io.minio.errors.*;
+import io.minio.errors.MinioException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,7 +31,8 @@ public class VideoController {
     }
 
     @GetMapping("/{folder}/video/{file}")
-    public ResponseEntity loadVideo(@PathVariable("folder") String folder, @PathVariable("file") String file) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public ResponseEntity loadVideo(@PathVariable("folder") String folder,
+                                    @PathVariable("file") String file) throws IOException, MinioException, NoSuchAlgorithmException, InvalidKeyException {
         var response = resourceService.getVideo(folder, file);
         byte[] resource = response.readAllBytes();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -40,9 +41,10 @@ public class VideoController {
     }
 
     @GetMapping("/{folder}/thumbnail")
-    public ResponseEntity loadThumbnail(@PathVariable("folder") String folder) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public ResponseEntity loadThumbnail(@PathVariable("folder") String folder)
+            throws MinioException, IOException, NoSuchAlgorithmException, InvalidKeyException {
         var response = minIOService.getImage(folder + "/thumbnail");
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(response.readAllBytes());
     }
-    
+
 }
