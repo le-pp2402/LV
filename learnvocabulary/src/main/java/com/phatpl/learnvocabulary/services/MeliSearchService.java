@@ -2,14 +2,12 @@ package com.phatpl.learnvocabulary.services;
 
 import com.meilisearch.sdk.SearchRequest;
 import com.meilisearch.sdk.model.Searchable;
-import com.phatpl.learnvocabulary.utils.TextToJsonArray;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -24,17 +22,14 @@ public class MeliSearchService {
         this.index = index;
     }
 
-    public void addDocument(Integer uid, String title, InputStream document, Timestamp created, Boolean isPrivate) {
+    public void addDocument(Integer uid, String title, Timestamp created, Boolean isPrivate) {
         try {
-            String data = TextToJsonArray.ReadFile(document);
-            var content = TextToJsonArray.toJsonArray(data);
             JSONArray array = new JSONArray();
             ArrayList<JSONObject> items = new ArrayList<>() {{
                 add(
                         new JSONObject()
                                 .put("id", uid)
                                 .put("title", title)
-                                .put("content", content)
                                 .put("created", created)
                                 .put("private", isPrivate)
                 );

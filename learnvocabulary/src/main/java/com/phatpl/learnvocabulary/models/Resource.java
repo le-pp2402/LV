@@ -14,11 +14,13 @@ import lombok.experimental.FieldDefaults;
 public class Resource extends BaseModel {
     @Column(nullable = false)
     String title;
-    String source;
-    String engsub;
-    String visub;
+    String video;
+    String thumbnail;
+    String enSub;
+    String viSub;
     Boolean isPrivate;
-    String contextType;
+    @Column(columnDefinition = "LONGTEXT")
+    String summarize;
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;

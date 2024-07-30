@@ -69,7 +69,7 @@ public class ApplicationConfig {
                 BuildTrie.mapWords.put(word.getId(), word);
             }
             BuildTrie.merge(0);
-            log.info("INIT FINISHED, TRIE SIZE = " + BuildTrie.Trie.size());
         };
     }
+
 }

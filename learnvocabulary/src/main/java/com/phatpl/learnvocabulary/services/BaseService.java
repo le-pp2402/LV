@@ -26,7 +26,7 @@ public class BaseService<E extends BaseModel,
         this.baseMapper = baseMapper;
         this.repo = repo;
     }
-    
+
     public List<E> findAll() {
         return repo.findAll();
     }

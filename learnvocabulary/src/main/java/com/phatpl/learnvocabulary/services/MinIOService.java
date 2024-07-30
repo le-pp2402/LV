@@ -4,9 +4,10 @@ import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
-import io.minio.errors.*;
+import io.minio.errors.MinioException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,9 @@ import java.security.NoSuchAlgorithmException;
 @Service
 public class MinIOService {
     private final MinioClient minioClient;
+
+    @Value("${BUCKET_NAME}")
+    private String bucketName;
 
     @Autowired
     public MinIOService(MinioClient minioClient) {
@@ -39,49 +43,50 @@ public class MinIOService {
         return str.toString();
     }
 
-    public String uploadVideo(MultipartFile video, String filename) throws Exception {
-        String bucket = "videos";
-        InputStream input = video.getInputStream();
-        filename = newFileName(filename);
+    public String uploadVideo(InputStream video, String filePath) throws Exception {
         PutObjectArgs putObj = PutObjectArgs
                 .builder()
-                .contentType(video.getContentType())
-                .stream(input, input.available(), -1)
-                .bucket(bucket)
-                .object(filename)
+                .contentType("application/vnd.apple.mpegurl")
+                .stream(video, video.available(), -1)
+                .bucket(bucketName)
+                .object(filePath)
                 .build();
         minioClient.putObject(putObj);
-        return bucket + "/" + filename;
+        return filePath;
     }
 
-    public String uploadDocument(MultipartFile document, String filename) throws Exception {
-        String bucket = "documents";
+    public String uploadDocument(MultipartFile document, String filePath) throws Exception {
         InputStream input = document.getInputStream();
-        filename = newFileName(filename);
         PutObjectArgs putObjectArgs = PutObjectArgs
                 .builder()
                 .contentType(document.getContentType())
                 .stream(input, input.available(), -1)
-                .bucket(bucket)
-                .object(filename)
+                .bucket(bucketName)
+                .object(filePath)
                 .build();
         minioClient.putObject(putObjectArgs);
-        return bucket + "/" + filename;
+        return filePath;
     }
 
-    public InputStream getFile(String path) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        String bucket = path.substring(0, path.indexOf("/"));
-        String file = path.substring(path.indexOf("/") + 1);
-        log.info("{} {}", bucket, file);
+    public InputStream getFile(String file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
         GetObjectArgs getObjectArgs = GetObjectArgs
                 .builder()
-                .bucket(bucket)
+                .bucket(bucketName)
                 .object(file)
                 .build();
         return minioClient.getObject(getObjectArgs);
     }
 
-    public void delete(String path) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public InputStream getImage(String file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
+        GetObjectArgs getObjectArgs = GetObjectArgs
+                .builder()
+                .bucket(bucketName)
+                .object(file)
+                .build();
+        return minioClient.getObject(getObjectArgs);
+    }
+
+    public void delete(String path) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
         String bucket = path.substring(0, path.indexOf("/"));
         String file = path.substring(path.indexOf("/") + 1);
         RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
@@ -89,7 +94,5 @@ public class MinIOService {
                 .object(file)
                 .build();
         minioClient.removeObject(removeObjectArgs);
-        log.info("path = " + path + " file = " + file);
     }
-
 }

@@ -1,52 +1,49 @@
 package com.phatpl.learnvocabulary.controllers;
 
+import com.phatpl.learnvocabulary.dtos.request.SummarizeRequest;
 import com.phatpl.learnvocabulary.dtos.request.UpdateResourceRequest;
 import com.phatpl.learnvocabulary.dtos.request.UploadResourceRequest;
 import com.phatpl.learnvocabulary.dtos.response.ResourceResponse;
 import com.phatpl.learnvocabulary.exceptions.UnauthorizationException;
 import com.phatpl.learnvocabulary.filters.ResourcesFilter;
 import com.phatpl.learnvocabulary.models.Resource;
+import com.phatpl.learnvocabulary.services.GeminiService;
 import com.phatpl.learnvocabulary.services.ResourceService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
-import io.minio.errors.*;
+import io.minio.errors.MinioException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.simpleframework.xml.core.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.RuntimeMBeanException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 @Slf4j
 @RestController
 @RequestMapping("/resources")
-public class ResourcesController extends BaseController<Resource, ResourceResponse, ResourcesFilter, Integer> {
+public class ResourceController extends BaseController<Resource, ResourceResponse, ResourcesFilter, Integer> {
 
-    @Autowired
     private final ResourceService resourceService;
+    private final GeminiService geminiService;
 
     @Autowired
-    public ResourcesController(ResourceService resourceService) {
+    public ResourceController(ResourceService resourceService, GeminiService geminiService) {
         super(resourceService);
         this.resourceService = resourceService;
+        this.geminiService = geminiService;
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping("/upload")
     public ResponseEntity upload(@ModelAttribute @Validate UploadResourceRequest request) {
         try {
-            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            return BuildResponse.ok(resourceService.save(request, auth));
+            return BuildResponse.ok(resourceService.save(request));
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {
@@ -58,16 +55,10 @@ public class ResourcesController extends BaseController<Resource, ResourceRespon
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable Integer id) {
         try {
-            var response = resourceService.getResources(id);
-            byte[] resource = response.readAllBytes();
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
-            return new ResponseEntity<>(resource, httpHeaders, HttpStatus.OK);
+            return BuildResponse.ok(resourceService.findDTOById(id));
         } catch (EntityNotFoundException e) {
             return BuildResponse.notFound(e.getMessage());
-        } catch (RuntimeMBeanException | ServerException | ErrorResponseException | NoSuchAlgorithmException |
-                 InvalidKeyException | InvalidResponseException | IOException | InsufficientDataException |
-                 XmlParserException | InternalException e) {
+        } catch (RuntimeException e) {
             return BuildResponse.badRequest(e.getMessage());
         }
     }
@@ -109,9 +100,32 @@ public class ResourcesController extends BaseController<Resource, ResourceRespon
             return BuildResponse.ok(resourceService.update(request, id));
         } catch (EntityNotFoundException e) {
             return BuildResponse.notFound(e.getMessage());
-        } catch (RuntimeException | ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+        } catch (RuntimeException | IOException | MinioException |
+                 NoSuchAlgorithmException | InvalidKeyException e) {
+            return BuildResponse.badRequest(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @GetMapping("/gen/{id}")
+    public ResponseEntity generateSummarize(@PathVariable("id") Integer id) {
+        try {
+            String content = resourceService.readSubFile(id);
+            String summarize = geminiService.generator(content);
+            var hm = new HashMap<String, String>();
+            hm.put("summarize", summarize);
+            return BuildResponse.ok(hm);
+        } catch (Exception e) {
+            return BuildResponse.badRequest(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PutMapping("/gen/{id}")
+    public ResponseEntity setSummarize(@PathVariable("id") Integer id, @RequestBody SummarizeRequest request) {
+        try {
+            return BuildResponse.ok(resourceService.setSummarize(id, request.getSummarize()));
+        } catch (Exception e) {
             return BuildResponse.badRequest(e.getMessage());
         }
     }
