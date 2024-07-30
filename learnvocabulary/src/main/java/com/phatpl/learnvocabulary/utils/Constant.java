@@ -9,12 +9,13 @@ public class Constant {
 
     public final static String NOT_NULL = "must not be null";
     public final static String FILE_SIZE_LARGE = "Files are too large to upload";
-
+    public final static String INVALID_FORMAT_FILE = "Invalid format file";
     public final static String POSTER = "00:00:00.001";
     public final static String TS_SECONDS = "30";
 
-    public final static String PROMT_PREFIX = "{\"contents\":[{\"parts\":[{\"text\":\"";
-    public final static String PROMT_SUFFIX = "\"}]}]}";
 
+    public final static String MINIO_VIDEO_DIR = "http://localhost:8080/video/";
+    public final static String SUBTITLE_EN = "/subtitle/en";
+    public final static String SUBTITLE_VI = "/subtitle/vi";
     public final static String CT_APPLICATION_JSON = "application/json";
 }

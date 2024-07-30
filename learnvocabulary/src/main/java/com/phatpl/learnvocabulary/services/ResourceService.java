@@ -11,8 +11,9 @@ import com.phatpl.learnvocabulary.mappers.ResourceResponseMapper;
 import com.phatpl.learnvocabulary.models.Resource;
 import com.phatpl.learnvocabulary.repositories.ResourceRepository;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
+import com.phatpl.learnvocabulary.utils.Constant;
 import com.phatpl.learnvocabulary.utils.FFmpegUtils;
-import io.minio.errors.*;
+import io.minio.errors.MinioException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -42,8 +43,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
     UserRepository userRepository;
     MeliSearchService meliSearchService;
     UserService userService;
-
-
+    
     @Autowired
     public ResourceService(ResourceRepository resourceRepository, ResourceResponseMapper resourceResponseMapper, MinIOService minIOService, UserRepository userRepository, MeliSearchService meliSearchService, Index index, UserService userService) {
         super(resourceResponseMapper, resourceRepository);
@@ -56,7 +56,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
     }
 
     public ResourceResponse save(UploadResourceRequest req) throws Exception {
-        Integer userid = userService.extractUserId();
+        var userid = userService.extractUserId();
         var user = userRepository.findById(userid).orElseThrow(UnauthorizationException::new);
         String contextType = req.getVideo().getContentType();
 
@@ -78,7 +78,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
 
             return resourceResponseMapper.toDTO(newElem);
         } else {
-            throw new BadRequestException("Invalid format file");
+            throw new BadRequestException(Constant.INVALID_FORMAT_FILE);
         }
     }
 
@@ -86,10 +86,10 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         var baseDir = String.valueOf(System.currentTimeMillis());
         var mediaInfo = new HashMap<String, String>();
 
-        var enSubPath = minIOService.uploadDocument(enSub, baseDir + "/subtitle/en");
-        var viSubPath = minIOService.uploadDocument(viSub, baseDir + "/subtitle/vi");
+        var enSubPath = minIOService.uploadDocument(enSub, baseDir + Constant.SUBTITLE_EN);
+        var viSubPath = minIOService.uploadDocument(viSub, baseDir + Constant.SUBTITLE_VI);
 
-        var chunkedFile = FFmpegUtils.ChunkVideoFile(video, "http://localhost:8080/video/" + baseDir + "/video/");
+        var chunkedFile = FFmpegUtils.ChunkVideoFile(video, Constant.MINIO_VIDEO_DIR + baseDir + "/video/");
         chunkedFile.forEach((key, value) -> {
             try {
                 var path = minIOService.uploadVideo(value, baseDir + "/video/" + key);
@@ -143,7 +143,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         resourceRepository.deleteAll();
     }
 
-    public ResourceResponse update(UpdateResourceRequest request, Integer id) throws InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public ResourceResponse update(UpdateResourceRequest request, Integer id) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
         var resource = resourceRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         resource.setTitle(request.getTitle());
         resource.setIsPrivate(request.getIsPrivate());
@@ -151,7 +151,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         return resourceResponseMapper.toDTO(resource);
     }
 
-    public InputStream getVideo(String name, String file) throws io.minio.errors.ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public InputStream getVideo(String name, String file) throws MinioException, IOException, NoSuchAlgorithmException, InvalidKeyException {
         return minIOService.getFile(name + "/video/" + file);
     }
 
@@ -159,7 +159,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         var resource = resourceRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         var input = minIOService.getFile(resource.getEnSub());
 
-        StringBuilder summarize = new StringBuilder();
+        var summarize = new StringBuilder();
         try (Reader reader = new BufferedReader(new InputStreamReader
                 (input, StandardCharsets.UTF_8))) {
             int c = 0;

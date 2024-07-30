@@ -4,7 +4,7 @@ import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
-import io.minio.errors.*;
+import io.minio.errors.MinioException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,7 +68,7 @@ public class MinIOService {
         return filePath;
     }
 
-    public InputStream getFile(String file) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public InputStream getFile(String file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
         GetObjectArgs getObjectArgs = GetObjectArgs
                 .builder()
                 .bucket(bucketName)
@@ -77,7 +77,7 @@ public class MinIOService {
         return minioClient.getObject(getObjectArgs);
     }
 
-    public InputStream getImage(String file) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public InputStream getImage(String file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
         GetObjectArgs getObjectArgs = GetObjectArgs
                 .builder()
                 .bucket(bucketName)
@@ -86,7 +86,7 @@ public class MinIOService {
         return minioClient.getObject(getObjectArgs);
     }
 
-    public void delete(String path) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public void delete(String path) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
         String bucket = path.substring(0, path.indexOf("/"));
         String file = path.substring(path.indexOf("/") + 1);
         RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
@@ -94,7 +94,5 @@ public class MinIOService {
                 .object(file)
                 .build();
         minioClient.removeObject(removeObjectArgs);
-        log.info("path = " + path + " file = " + file);
     }
-
 }

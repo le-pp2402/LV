@@ -25,7 +25,7 @@ public class GeminiService {
 
     private static final HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
 
-    private final String sysInstruction = "Summarize the following passage: ";
+    private final String sysInstruction = "Summarize the following passage less than 100 words: ";
 
     private String createJSONPromt(String query) {
         var text = new HashMap<String, Object>();
