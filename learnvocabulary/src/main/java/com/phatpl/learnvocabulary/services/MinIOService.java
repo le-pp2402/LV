@@ -43,6 +43,18 @@ public class MinIOService {
         return str.toString();
     }
 
+    public String uploadVideo(InputStream video, String filePath, String ContentType) throws Exception {
+        PutObjectArgs putObj = PutObjectArgs
+                .builder()
+                .contentType(ContentType)
+                .stream(video, video.available(), -1)
+                .bucket(bucketName)
+                .object(filePath)
+                .build();
+        minioClient.putObject(putObj);
+        return filePath;
+    }
+
     public String uploadVideo(InputStream video, String filePath) throws Exception {
         PutObjectArgs putObj = PutObjectArgs
                 .builder()
@@ -86,11 +98,9 @@ public class MinIOService {
         return minioClient.getObject(getObjectArgs);
     }
 
-    public void delete(String path) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
-        String bucket = path.substring(0, path.indexOf("/"));
-        String file = path.substring(path.indexOf("/") + 1);
+    public void delete(String file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, MinioException {
         RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
-                .bucket(bucket)
+                .bucket(bucketName)
                 .object(file)
                 .build();
         minioClient.removeObject(removeObjectArgs);

@@ -19,6 +19,7 @@ public class Resource extends BaseModel {
     String enSub;
     String viSub;
     Boolean isPrivate;
+    Boolean isReady;
     @Column(columnDefinition = "LONGTEXT")
     String summarize;
     @ManyToOne

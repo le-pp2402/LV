@@ -19,10 +19,8 @@ public class UploadResourceRequest {
     @NotNull(message = "Video " + Constant.NOT_NULL)
     public MultipartFile video;
 
-    @NotNull(message = "EngSub " + Constant.NOT_NULL)
     public MultipartFile enSub;
 
-    @NotNull(message = "VieSub " + Constant.NOT_NULL)
     public MultipartFile viSub;
 
     public MultipartFile thumbnail;

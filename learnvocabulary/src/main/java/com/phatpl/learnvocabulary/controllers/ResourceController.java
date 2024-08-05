@@ -75,7 +75,7 @@ public class ResourceController extends BaseController<Resource, ResourceRespons
     }
 
     @Override
-    @GetMapping
+    @PostMapping
     public ResponseEntity findAll(@RequestBody ResourcesFilter request) {
         try {
             return BuildResponse.ok(

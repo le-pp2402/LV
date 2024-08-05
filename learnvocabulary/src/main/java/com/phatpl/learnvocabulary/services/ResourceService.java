@@ -12,7 +12,6 @@ import com.phatpl.learnvocabulary.models.Resource;
 import com.phatpl.learnvocabulary.repositories.ResourceRepository;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.Constant;
-import com.phatpl.learnvocabulary.utils.FFmpegUtils;
 import io.minio.errors.MinioException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
@@ -43,7 +42,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
     UserRepository userRepository;
     MeliSearchService meliSearchService;
     UserService userService;
-    
+
     @Autowired
     public ResourceService(ResourceRepository resourceRepository, ResourceResponseMapper resourceResponseMapper, MinIOService minIOService, UserRepository userRepository, MeliSearchService meliSearchService, Index index, UserService userService) {
         super(resourceResponseMapper, resourceRepository);
@@ -64,6 +63,7 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         resource.setTitle(req.getTitle());
         resource.setIsPrivate(req.getIsPrivate());
         resource.setUser(user);
+        resource.setIsReady(false);
 
         if (contextType != null && contextType.startsWith("video")) {
             var mediaInfo = uploadVideo(req.getVideo(), req.getEnSub(), req.getViSub(), req.getThumbnail());
@@ -89,18 +89,8 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         var enSubPath = minIOService.uploadDocument(enSub, baseDir + Constant.SUBTITLE_EN);
         var viSubPath = minIOService.uploadDocument(viSub, baseDir + Constant.SUBTITLE_VI);
 
-        var chunkedFile = FFmpegUtils.ChunkVideoFile(video, Constant.MINIO_VIDEO_DIR + baseDir + "/video/");
-        chunkedFile.forEach((key, value) -> {
-            try {
-                var path = minIOService.uploadVideo(value, baseDir + "/video/" + key);
-                if (key.equals("index.m3u8")) {
-                    mediaInfo.put("video", path);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        });
-
+        var path = minIOService.uploadVideo(video.getInputStream(), baseDir + "/video/" + "video", video.getContentType());
+        mediaInfo.put("video", path);
         if (thumbnail != null) {
             var thumbnailPath = minIOService.uploadDocument(thumbnail, baseDir + "/thumbnail");
             mediaInfo.put("thumbnail", thumbnailPath);
