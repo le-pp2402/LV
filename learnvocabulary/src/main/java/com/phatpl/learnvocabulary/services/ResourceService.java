@@ -141,8 +141,12 @@ public class ResourceService extends BaseService<Resource, ResourceResponse, Res
         return resourceResponseMapper.toDTO(resource);
     }
 
-    public InputStream getVideo(String name, String file) throws MinioException, IOException, NoSuchAlgorithmException, InvalidKeyException {
-        return minIOService.getFile(name + "/video/" + file);
+    public InputStream getVideo(String folder, String file) throws Exception {
+        return minIOService.getFile(folder + "/video/" + file);
+    }
+
+    public InputStream getSubtitle(String folder, String file) throws Exception {
+        return minIOService.getFile(folder + "/subtitle/" + file);
     }
 
     public String readSubFile(Integer id) throws Exception {
