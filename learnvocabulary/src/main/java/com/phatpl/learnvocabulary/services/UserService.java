@@ -11,6 +11,7 @@ import com.phatpl.learnvocabulary.mappers.RegisterRequestMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
 import com.phatpl.learnvocabulary.models.BaseModel;
 import com.phatpl.learnvocabulary.models.User;
+import com.phatpl.learnvocabulary.repositories.FriendRepository;
 import com.phatpl.learnvocabulary.repositories.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.MailUtil;
@@ -31,13 +32,15 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     UserRepository userRepository;
     MailService mailService;
     UserResponseMapper userResponseMapper;
+    FriendRepository friendRepository;
 
     @Autowired
-    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService) {
+    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService, FriendRepository friendRepository) {
         super(userResponseMapper, userRepository);
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userResponseMapper = userResponseMapper;
+        this.friendRepository = friendRepository;
     }
 
     public UserResponse register(RegisterRequest request) throws RuntimeException {
@@ -72,8 +75,11 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
             var user = optUser.get();
             user.setActivated(true);
+            friendRepository.createUser(user.getId());
             return userResponseMapper.toDTO(persistEntity(user));
-        } else throw new WrongVerifyCode();
+        } else {
+            throw new WrongVerifyCode();
+        }
     }
 
     public UserResponse updateUserInfo(String oldPassword, String newPassword) {

@@ -18,6 +18,11 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>5.23.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20231013</version>
@@ -78,7 +83,7 @@
             <artifactId>minio</artifactId>
             <version>8.5.11</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.meilisearch.sdk</groupId>
             <artifactId>meilisearch-java</artifactId>

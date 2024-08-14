@@ -61,7 +61,7 @@ public class ApplicationConfig {
                 user.setCode(0);
                 user.setActivated(true);
                 user.setEmail("admin123@gmail.com");
-                userRepository.save(user);
+                var result = userRepository.save(user);
             }
             var words = wordRepository.findAll();
             for (var word : words) {

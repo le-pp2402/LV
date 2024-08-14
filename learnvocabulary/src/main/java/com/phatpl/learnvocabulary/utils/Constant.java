@@ -18,4 +18,6 @@ public class Constant {
     public final static String SUBTITLE_EN = "/subtitle/en";
     public final static String SUBTITLE_VI = "/subtitle/vi";
     public final static String CT_APPLICATION_JSON = "application/json";
+
+    public final static String ACCOUNT_NOT_FOUND = "Account not found";
 }
