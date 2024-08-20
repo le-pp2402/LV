@@ -57,7 +57,7 @@ public class VideoController {
 
     @GetMapping("/{folder}/x/{file}")
     public ResponseEntity loadSubtitle(@PathVariable("folder") String folder,
-                                       @PathVariable("file") String file) throws Exception {
+                                       @PathVariable("file") String file) {
         try {
             var response = resourceService.getSubtitle(folder, file);
             byte[] resource = response.readAllBytes();
