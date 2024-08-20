@@ -55,7 +55,7 @@ public class VideoController {
         }
     }
 
-    @GetMapping("/{folder}/subtitle/{file}")
+    @GetMapping("/{folder}/x/{file}")
     public ResponseEntity loadSubtitle(@PathVariable("folder") String folder,
                                        @PathVariable("file") String file) throws Exception {
         try {

@@ -41,7 +41,7 @@ public class FriendRepository {
         }
     }
 
-    // 0 nếu chưa tồn tại, 1 nếu đã tồn tại
+
     public boolean isExistedFriendRequest(Integer fromUserID, Integer toUserID) {
         String stm = """
                     MATCH (
@@ -103,7 +103,7 @@ public class FriendRepository {
         }
     }
 
-    public List<Integer> lstRequestFriend(Integer userID) {
+    public List<Integer> findRequestFriend(Integer userID) {
         String stm = """
                     MATCH (a:User {user_id: $userID}) <- [p:IS_FRIEND {status: 0}] - (b: User)
                     RETURN a
@@ -111,21 +111,22 @@ public class FriendRepository {
         var param = new HashMap<>();
         param.put("userID", userID);
 
-        var lstRequestFriend = new ArrayList<Integer>();
+        var friendRequests = new ArrayList<Integer>();
 
         var sessionCfg = SessionConfig.builder().withDatabase(database).withDefaultAccessMode(AccessMode.READ).build();
         try (var session = neo4jDriver.session(sessionCfg)) {
             var result = session.executeRead(tx -> tx.run(stm, Values.value(param)).list());
             if (result != null) {
                 for (var elem : result) {
-                    lstRequestFriend.add(elem.get("user_id").asInt());
+                    friendRequests.add(elem.get("user_id").asInt());
                 }
             }
         }
-        return lstRequestFriend;
+
+        return friendRequests;
     }
 
-    public List<Integer> lstFriend(Integer userID) {
+    public List<Integer> findFriends(Integer userID) {
         String stm = """
                 MATCH (a: User {user_id: $userID}) - [p:IS_FRIEND {status: 1}] - (b: User)
                 RETURN b
@@ -133,24 +134,24 @@ public class FriendRepository {
         var param = new HashMap<>();
         param.put("userID", userID);
 
-        var lstFriend = new ArrayList<Integer>();
+        var friends = new ArrayList<Integer>();
         var sessionCfg = SessionConfig.builder().withDatabase(database).withDefaultAccessMode(AccessMode.READ).build();
 
         try (var session = neo4jDriver.session(sessionCfg)) {
             var result = session.executeRead(tx -> tx.run(stm, Values.value(param)).list());
             if (result != null) {
                 for (var elem : result) {
-                    lstFriend.add(elem.values().get(0).get("user_id").asInt());
+                    friends.add(elem.values().get(0).get("user_id").asInt());
                 }
             }
         }
-        return lstFriend;
+        return friends;
     }
 
-    public List<Integer> friendRecommend(Integer userID) {
+    public List<Integer> getFriendRecommends(Integer userID) {
         String stm = """
                     MATCH ( n:User { user_id: $userID })
-                    MATCH  (n)-[:IS_FRIEND*2]-(m)
+                    MATCH  (n)-[:IS_FRIEND*..3]-(m)
                     WHERE NOT (n)-[:IS_FRIEND]-(m)
                     RETURN m LIMIT 20
                 """;
@@ -170,10 +171,11 @@ public class FriendRepository {
                 }
             }
         }
+
         return results;
     }
 
-    public void friendRefuse(Integer userID1, Integer userID2) {
+    public void refuseFriendRequest(Integer userID1, Integer userID2) {
         String stm = """
                 MATCH (a: User {user_id : $userID1 } )-[p:IS_FRIEND]-(b : User { user_id: $userID2 } )
                 DETACH DELETE p

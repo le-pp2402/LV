@@ -22,7 +22,7 @@ public class FriendController {
     @GetMapping
     public ResponseEntity allFriend() {
         try {
-            return BuildResponse.ok(friendService.lstFriend());
+            return BuildResponse.ok(friendService.findFriends());
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class FriendController {
     @GetMapping("/friend-recommend")
     public ResponseEntity friendRecommend() {
         try {
-            return BuildResponse.ok(friendService.friendRecommend());
+            return BuildResponse.ok(friendService.getFriendRecommends());
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {
@@ -80,7 +80,7 @@ public class FriendController {
     @GetMapping("/friend-request")
     public ResponseEntity getFriendRequest() {
         try {
-            return BuildResponse.ok(friendService.lstRequestFriend());
+            return BuildResponse.ok(friendService.findRequestFriend());
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {

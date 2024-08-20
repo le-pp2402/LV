@@ -34,22 +34,19 @@ public class FriendService {
 
     public void sendFriendRequest(Integer toUserID) {
         var fromUserID = userService.extractUserId();
-        log.info(fromUserID.toString(), toUserID.toString());
         if (userRepository.findById(toUserID).isEmpty()) throw new EntityNotFoundException(Constant.ACCOUNT_NOT_FOUND);
         friendRepository.createFriendRequest(fromUserID, toUserID);
     }
 
     public void acceptFriendRequest(Integer toUserID) {
         var fromUserID = userService.extractUserId();
-        log.info(fromUserID.toString(), toUserID.toString());
         if (userRepository.findById(toUserID).isEmpty()) throw new EntityNotFoundException(Constant.ACCOUNT_NOT_FOUND);
         friendRepository.createFriendRequest(fromUserID, toUserID);
     }
 
-    public List<UserResponse> lstRequestFriend() {
+    public List<UserResponse> findRequestFriend() {
         var userID = userService.extractUserId();
-        log.info(userID.toString());
-        var friends = friendRepository.lstRequestFriend(userID);
+        var friends = friendRepository.findRequestFriend(userID);
         var result = new ArrayList<UserResponse>();
         for (var id : friends) {
             var userOpt = userRepository.findById(id);
@@ -58,9 +55,9 @@ public class FriendService {
         return result;
     }
 
-    public List<UserResponse> lstFriend() {
+    public List<UserResponse> findFriends() {
         var userID = userService.extractUserId();
-        var friends = friendRepository.lstFriend(userID);
+        var friends = friendRepository.findFriends(userID);
         var result = new ArrayList<UserResponse>();
         for (var id : friends) {
             var userOpt = userRepository.findById(id);
@@ -69,10 +66,9 @@ public class FriendService {
         return result;
     }
 
-    public List<UserResponse> friendRecommend() {
+    public List<UserResponse> getFriendRecommends() {
         var userID = userService.extractUserId();
-        log.info(userID.toString());
-        var friends = friendRepository.friendRecommend(userID);
+        var friends = friendRepository.getFriendRecommends(userID);
         var result = new ArrayList<UserResponse>();
         for (var id : friends) {
             var userOpt = userRepository.findById(id);
@@ -84,6 +80,6 @@ public class FriendService {
     public void refuseFriendRequest(Integer toUserID) {
         var fromUserID = userService.extractUserId();
         log.info(fromUserID.toString(), toUserID.toString());
-        friendRepository.friendRefuse(fromUserID, toUserID);
+        friendRepository.refuseFriendRequest(fromUserID, toUserID);
     }
 }
