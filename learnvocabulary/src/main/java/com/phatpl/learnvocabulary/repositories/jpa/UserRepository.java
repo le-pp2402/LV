@@ -2,6 +2,7 @@ package com.phatpl.learnvocabulary.repositories.jpa;
 
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.models.User;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,5 +15,6 @@ public interface UserRepository extends BaseRepository<User, UserFilter, Integer
 
     Optional<User> findByEmail(String email);
 
-    Optional<User> findById(Integer id);
+    @NotNull
+    Optional<User> findById(@NotNull Integer id);
 }

@@ -2,6 +2,7 @@ package com.phatpl.learnvocabulary.repositories.jpa;
 
 import com.phatpl.learnvocabulary.filters.GroupFilter;
 import com.phatpl.learnvocabulary.models.Group;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,8 @@ import java.util.Optional;
 @Repository
 public interface GroupRepository extends BaseRepository<Group, GroupFilter, Integer> {
 
-    Optional<Group> findById(Integer id);
+    @NotNull
+    Optional<Group> findById(@NotNull Integer id);
 
     @Query(value = """
             SELECT `groups`.*
