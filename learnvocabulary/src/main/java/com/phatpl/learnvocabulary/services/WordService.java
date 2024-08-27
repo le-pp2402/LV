@@ -4,7 +4,7 @@ import com.phatpl.learnvocabulary.dtos.response.WordResponse;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.WordResponseMapper;
 import com.phatpl.learnvocabulary.models.Word;
-import com.phatpl.learnvocabulary.repositories.WordRepository;
+import com.phatpl.learnvocabulary.repositories.jpa.WordRepository;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;

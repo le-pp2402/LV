@@ -1,8 +1,8 @@
 package com.phatpl.learnvocabulary.configs;
 
 import com.phatpl.learnvocabulary.models.User;
-import com.phatpl.learnvocabulary.repositories.UserRepository;
-import com.phatpl.learnvocabulary.repositories.WordRepository;
+import com.phatpl.learnvocabulary.repositories.jpa.UserRepository;
+import com.phatpl.learnvocabulary.repositories.jpa.WordRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.CustomUserDetail;
 import com.phatpl.learnvocabulary.utils.Trie.BuildTrie;
@@ -32,8 +32,7 @@ public class ApplicationConfig {
         return username -> {
             var user = userRepository.findByUsername(username);
             if (user.isEmpty()) throw new UsernameNotFoundException("not found " + username);
-            CustomUserDetail userDetail = new CustomUserDetail(user.get());
-            return userDetail;
+            return new CustomUserDetail(user.get());
         };
     }
 
@@ -61,7 +60,7 @@ public class ApplicationConfig {
                 user.setCode(0);
                 user.setActivated(true);
                 user.setEmail("admin123@gmail.com");
-                var result = userRepository.save(user);
+                userRepository.save(user);
             }
             var words = wordRepository.findAll();
             for (var word : words) {

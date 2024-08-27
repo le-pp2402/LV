@@ -9,11 +9,15 @@ import java.util.Map;
 
 public class BuildTrie {
     public static List<Node> Trie;
-    public static Map<Integer, Word> mapWords = new HashMap<>();
+    public static Map<Integer, Word> mapWords;
+
+    static {
+        Trie = new ArrayList<>();
+        mapWords = new HashMap<>();
+        Trie.add(new Node());
+    }
 
     public BuildTrie() {
-        Trie = new ArrayList<>();
-        Trie.add(new Node());
     }
 
     public static void addWord(Integer id, String word) {

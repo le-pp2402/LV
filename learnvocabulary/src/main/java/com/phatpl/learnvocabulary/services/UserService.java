@@ -9,10 +9,11 @@ import com.phatpl.learnvocabulary.exceptions.WrongVerifyCode;
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.mappers.RegisterRequestMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
+import com.phatpl.learnvocabulary.mappers.neo4j.Neo4jUserMapper;
 import com.phatpl.learnvocabulary.models.BaseModel;
 import com.phatpl.learnvocabulary.models.User;
-import com.phatpl.learnvocabulary.repositories.FriendRepository;
-import com.phatpl.learnvocabulary.repositories.UserRepository;
+import com.phatpl.learnvocabulary.repositories.graph.FriendRepositoryBAD;
+import com.phatpl.learnvocabulary.repositories.jpa.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.MailUtil;
 import lombok.AccessLevel;
@@ -22,9 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
@@ -32,15 +31,17 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     UserRepository userRepository;
     MailService mailService;
     UserResponseMapper userResponseMapper;
-    FriendRepository friendRepository;
+    FriendRepositoryBAD friendRepositoryBAD;
+    Neo4jUserMapper neo4jUserMapper;
 
     @Autowired
-    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService, FriendRepository friendRepository) {
+    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService, FriendRepositoryBAD friendRepositoryBAD, Neo4jUserMapper neo4jUserMapper) {
         super(userResponseMapper, userRepository);
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userResponseMapper = userResponseMapper;
-        this.friendRepository = friendRepository;
+        this.friendRepositoryBAD = friendRepositoryBAD;
+        this.neo4jUserMapper = neo4jUserMapper;
     }
 
     public UserResponse register(RegisterRequest request) throws RuntimeException {
@@ -75,7 +76,6 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
             var user = optUser.get();
             user.setActivated(true);
-            friendRepository.createUser(user.getId());
             return userResponseMapper.toDTO(persistEntity(user));
         } else {
             throw new WrongVerifyCode();

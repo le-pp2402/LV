@@ -67,7 +67,6 @@ public class VideoController {
         } catch (Exception e) {
             return BuildResponse.badRequest(e.getMessage());
         }
-
     }
 
     @GetMapping("/{folder}/thumbnail")

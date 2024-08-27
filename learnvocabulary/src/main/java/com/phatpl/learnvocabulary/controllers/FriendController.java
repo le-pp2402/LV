@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/friends")
 public class FriendController {
-    private FriendService friendService;
+    private final FriendService friendService;
 
     @Autowired
     public FriendController(FriendService friendService) {
@@ -20,9 +20,9 @@ public class FriendController {
     }
 
     @GetMapping
-    public ResponseEntity allFriend() {
+    public ResponseEntity<?> getFriends() {
         try {
-            return BuildResponse.ok(friendService.findFriends());
+            return BuildResponse.ok(friendService.getFriends());
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {
@@ -31,10 +31,10 @@ public class FriendController {
     }
 
     @PutMapping("/accept")
-    public ResponseEntity acceptFriendRequest(@RequestBody FriendRequest request) {
+    public ResponseEntity<?> acceptFriendRequest(@RequestBody FriendRequest request) {
         try {
-            friendService.acceptFriendRequest(request.getUserId());
-            return BuildResponse.ok("true");
+            friendService.sendFriendRequest(request.getUserId());
+            return BuildResponse.ok("success");
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {
@@ -43,10 +43,10 @@ public class FriendController {
     }
 
     @PutMapping("/refuse")
-    public ResponseEntity refuseFriendRequest(@RequestBody FriendRequest request) {
+    public ResponseEntity<?> refuseFriendRequest(@RequestBody FriendRequest request) {
         try {
             friendService.refuseFriendRequest(request.getUserId());
-            return BuildResponse.ok("true");
+            return BuildResponse.ok("success");
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {
@@ -55,10 +55,10 @@ public class FriendController {
     }
 
     @PostMapping("/send-request")
-    public ResponseEntity sendFriendRequest(@RequestBody FriendRequest request) {
+    public ResponseEntity<?> sendFriendRequest(@RequestBody FriendRequest request) {
         try {
             friendService.sendFriendRequest(request.getUserId());
-            return BuildResponse.ok("true");
+            return BuildResponse.ok("success");
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {
@@ -67,9 +67,9 @@ public class FriendController {
     }
 
     @GetMapping("/friend-recommend")
-    public ResponseEntity friendRecommend() {
+    public ResponseEntity<?> friendRecommend() {
         try {
-            return BuildResponse.ok(friendService.getFriendRecommends());
+            return BuildResponse.ok(friendService.getSuggestFriends());
         } catch (UnauthorizationException e) {
             return BuildResponse.unauthorized(e.getMessage());
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class FriendController {
     }
 
     @GetMapping("/friend-request")
-    public ResponseEntity getFriendRequest() {
+    public ResponseEntity<?> getFriendRequest() {
         try {
             return BuildResponse.ok(friendService.findRequestFriend());
         } catch (UnauthorizationException e) {

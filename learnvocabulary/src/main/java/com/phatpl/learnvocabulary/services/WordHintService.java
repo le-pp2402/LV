@@ -4,7 +4,7 @@ import com.phatpl.learnvocabulary.dtos.response.WordHintResponse;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.WordHintResponseMapper;
 import com.phatpl.learnvocabulary.models.Word;
-import com.phatpl.learnvocabulary.repositories.WordRepository;
+import com.phatpl.learnvocabulary.repositories.jpa.WordRepository;
 import com.phatpl.learnvocabulary.utils.Trie.BuildTrie;
 import org.springframework.stereotype.Service;
 

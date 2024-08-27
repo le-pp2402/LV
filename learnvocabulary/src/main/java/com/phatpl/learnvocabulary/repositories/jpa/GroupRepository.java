@@ -1,4 +1,4 @@
-package com.phatpl.learnvocabulary.repositories;
+package com.phatpl.learnvocabulary.repositories.jpa;
 
 import com.phatpl.learnvocabulary.filters.GroupFilter;
 import com.phatpl.learnvocabulary.models.Group;

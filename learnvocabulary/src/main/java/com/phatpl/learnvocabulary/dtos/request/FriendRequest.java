@@ -12,5 +12,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FriendRequest {
     @JsonProperty("user_id")
-    public Integer userId;
+    public Long userId;
 }

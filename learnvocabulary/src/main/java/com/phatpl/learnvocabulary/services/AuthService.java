@@ -8,7 +8,7 @@ import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.mappers.LoginResponseMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
 import com.phatpl.learnvocabulary.models.User;
-import com.phatpl.learnvocabulary.repositories.UserRepository;
+import com.phatpl.learnvocabulary.repositories.jpa.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +32,7 @@ public class AuthService extends BaseService<User, UserResponse, UserFilter, Int
         this.authenticationManager = authenticationManager;
     }
 
-    
+
     public LoginResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())

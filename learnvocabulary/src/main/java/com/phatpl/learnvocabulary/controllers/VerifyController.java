@@ -5,7 +5,6 @@ import com.phatpl.learnvocabulary.services.UserService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/verify")
-@Transactional
 public class VerifyController {
 
     private final UserService userService;

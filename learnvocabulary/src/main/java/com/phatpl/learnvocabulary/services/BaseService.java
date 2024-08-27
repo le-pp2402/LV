@@ -4,7 +4,7 @@ import com.phatpl.learnvocabulary.dtos.BaseDTO;
 import com.phatpl.learnvocabulary.filters.BaseFilter;
 import com.phatpl.learnvocabulary.mappers.BaseMapper;
 import com.phatpl.learnvocabulary.models.BaseModel;
-import com.phatpl.learnvocabulary.repositories.BaseRepository;
+import com.phatpl.learnvocabulary.repositories.jpa.BaseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.MappedSuperclass;
 import lombok.extern.slf4j.Slf4j;

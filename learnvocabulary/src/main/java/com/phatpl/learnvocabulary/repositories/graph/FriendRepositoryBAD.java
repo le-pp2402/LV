@@ -1,4 +1,4 @@
-package com.phatpl.learnvocabulary.repositories;
+package com.phatpl.learnvocabulary.repositories.graph;
 
 
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Repository
 @Slf4j
-public class FriendRepository {
+public class FriendRepositoryBAD {
 
     private final Driver neo4jDriver;
 
@@ -27,7 +27,7 @@ public class FriendRepository {
     private String database;
 
     @Autowired
-    public FriendRepository(Driver neo4jDriver) {
+    public FriendRepositoryBAD(Driver neo4jDriver) {
         this.neo4jDriver = neo4jDriver;
     }
 
