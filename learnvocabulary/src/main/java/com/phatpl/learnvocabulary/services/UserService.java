@@ -9,10 +9,10 @@ import com.phatpl.learnvocabulary.exceptions.WrongVerifyCode;
 import com.phatpl.learnvocabulary.filters.UserFilter;
 import com.phatpl.learnvocabulary.mappers.RegisterRequestMapper;
 import com.phatpl.learnvocabulary.mappers.UserResponseMapper;
-import com.phatpl.learnvocabulary.mappers.neo4j.Neo4jUserMapper;
+import com.phatpl.learnvocabulary.mappers.graph.GraphUserMapperGraph;
 import com.phatpl.learnvocabulary.models.BaseModel;
 import com.phatpl.learnvocabulary.models.User;
-import com.phatpl.learnvocabulary.repositories.graph.FriendRepositoryBAD;
+import com.phatpl.learnvocabulary.repositories.graph.UserRepo;
 import com.phatpl.learnvocabulary.repositories.jpa.UserRepository;
 import com.phatpl.learnvocabulary.utils.BCryptPassword;
 import com.phatpl.learnvocabulary.utils.MailUtil;
@@ -31,17 +31,17 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
     UserRepository userRepository;
     MailService mailService;
     UserResponseMapper userResponseMapper;
-    FriendRepositoryBAD friendRepositoryBAD;
-    Neo4jUserMapper neo4jUserMapper;
+    UserRepo userRepo;
+    GraphUserMapperGraph graphUserMapper;
 
     @Autowired
-    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService, FriendRepositoryBAD friendRepositoryBAD, Neo4jUserMapper neo4jUserMapper) {
+    public UserService(UserResponseMapper userResponseMapper, UserRepository userRepository, MailService mailService, UserRepo userRepo, GraphUserMapperGraph graphUserMapper) {
         super(userResponseMapper, userRepository);
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userResponseMapper = userResponseMapper;
-        this.friendRepositoryBAD = friendRepositoryBAD;
-        this.neo4jUserMapper = neo4jUserMapper;
+        this.userRepo = userRepo;
+        this.graphUserMapper = graphUserMapper;
     }
 
     public UserResponse register(RegisterRequest request) throws RuntimeException {
@@ -76,6 +76,7 @@ public class UserService extends BaseService<User, UserResponse, UserFilter, Int
         if (optUser.isPresent() && optUser.get().getCode().equals(code)) {
             var user = optUser.get();
             user.setActivated(true);
+            userRepo.save(graphUserMapper.toGraphModel(user));
             return userResponseMapper.toDTO(persistEntity(user));
         } else {
             throw new WrongVerifyCode();

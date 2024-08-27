@@ -27,7 +27,7 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
     }
 
     @PutMapping("/me")
-    public ResponseEntity updateUserInfo(@Valid @RequestBody UpdatePasswordRequest request) {
+    public ResponseEntity<?> updateUserInfo(@Valid @RequestBody UpdatePasswordRequest request) {
         try {
             return BuildResponse.ok(userService.updateUserInfo(
                     request.getOldPassword(), request.getNewPassword()
@@ -38,7 +38,7 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
     }
 
     @GetMapping("/me")
-    public ResponseEntity getUserInfo() {
+    public ResponseEntity<?> getUserInfo() {
         try {
             return BuildResponse.ok(userService.me());
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class UserController extends BaseController<User, UserResponse, UserFilte
     @Override
     @GetMapping
     @PreAuthorize("hasAuthority(SCOPE_ADMIN)")
-    public ResponseEntity findAll(UserFilter userFilter) {
+    public ResponseEntity<?> findAll(UserFilter userFilter) {
         var users = userService.findAllDTO();
         return BuildResponse.ok(users);
     }

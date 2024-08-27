@@ -1,8 +1,8 @@
-package com.phatpl.learnvocabulary.mappers.neo4j;
+package com.phatpl.learnvocabulary.mappers.graph;
 
 import java.util.List;
 
-public interface BaseMapper<T, G> {
+public interface GraphBaseMapper<T, G> {
     G toGraphModel(T t);
 
     T toTableModel(G g);

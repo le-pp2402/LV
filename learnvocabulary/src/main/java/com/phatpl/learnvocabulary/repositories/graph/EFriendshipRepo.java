@@ -12,9 +12,9 @@ import java.util.Optional;
 public interface EFriendshipRepo extends BaseRepo<Friendship, BaseFilter, Long> {
 
     @Query("""
-            MATCH (n) WHERE ID(n) = $user_id_1
+            MATCH (n) WHERE n.user_id = $user_id_1
             WITH (n)
-            MATCH (m) WHERE ID(m) = $user_id_2
+            MATCH (m) WHERE m.user_id = $user_id_2
             MATCH (n) - [p: IS_FRIEND] -> (m)
             RETURN ID(p)
             """

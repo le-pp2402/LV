@@ -20,6 +20,10 @@ public class NUser {
     @GeneratedValue
     private Long id;
 
+    @Property(name = "user_id")
+    @NotNull
+    private Long UserId;
+
     @Property(name = "username")
     @NotNull
     private String username;
@@ -28,7 +32,7 @@ public class NUser {
     @NotNull
     String email;
 
-    @Property(name = "isAdmin")
+    @Property(name = "is_admin")
     @NotNull
     Boolean isAdmin = false;
 

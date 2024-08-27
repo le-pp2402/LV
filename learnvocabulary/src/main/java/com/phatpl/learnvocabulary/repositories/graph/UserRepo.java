@@ -12,20 +12,22 @@ import java.util.Optional;
 @Repository
 public interface UserRepo extends BaseRepo<NUser, BaseFilter, Long> {
 
+    Optional<NUser> findByUserId(Long userID);
+
     Optional<NUser> findByUsername(String username);
 
     Optional<Pair<NUser, Long>> findByEmail(String email);
 
     @Query("""
             MATCH (a: User) - [p:IS_FRIEND] - (b: User)
-            WHERE ID(a) = $userId AND p.status = 1
+            WHERE a.user_id = $userId AND p.status = 1
             RETURN b
             """)
     List<NUser> getFriends(Long userId);
 
     @Query("""
             MATCH (n :User)
-            WHERE ID(n) = $userId
+            WHERE n.user_id = $userId
             MATCH (n)-[:IS_FRIEND*..3]-(m)
             WHERE NOT (n)-[:IS_FRIEND]-(m)
             RETURN m LIMIT 20
@@ -34,7 +36,7 @@ public interface UserRepo extends BaseRepo<NUser, BaseFilter, Long> {
 
     @Query("""
             MATCH (n: User)
-            WHERE ID(n) = $userId
+            WHERE n.user_id = $userId
             MATCH (m) - [p:IS_FRIEND] -> (n)
             WHERE p.status = 0
             RETURN (m)
