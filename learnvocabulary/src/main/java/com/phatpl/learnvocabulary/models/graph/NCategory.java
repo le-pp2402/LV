@@ -21,4 +21,8 @@ public class NCategory {
 
     @Property("category")
     private String category;
+
+    public NCategory(String category) {
+        this.category = category;
+    }
 }

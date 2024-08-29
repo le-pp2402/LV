@@ -21,5 +21,6 @@ public class Constant {
 
     public final static String ACCOUNT_NOT_FOUND = "Account not found";
     public final static String FRIEND_REQUEST_NOT_FOUND = "Friend request not found";
-
+    public final static String CATEGORY_NOT_FOUND = "Category not found";
+    public final static String VIDEO_NOT_FOUND = "Video not found";
 }

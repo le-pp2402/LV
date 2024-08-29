@@ -2,7 +2,7 @@ package com.phatpl.learnvocabulary.services;
 
 import com.phatpl.learnvocabulary.models.graph.NUser;
 import com.phatpl.learnvocabulary.models.graph.relationship.Friendship;
-import com.phatpl.learnvocabulary.repositories.graph.EFriendshipRepo;
+import com.phatpl.learnvocabulary.repositories.graph.FriendshipRepo;
 import com.phatpl.learnvocabulary.repositories.graph.UserRepo;
 import com.phatpl.learnvocabulary.utils.Constant;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,13 +20,13 @@ import java.util.List;
 public class FriendService {
 
     static final Logger log = LoggerFactory.getLogger(FriendService.class);
-    final EFriendshipRepo eFriendshipRepo;
+    final FriendshipRepo friendshipRepo;
     final UserRepo userRepo;
     final UserService userService;
 
     @Autowired
-    public FriendService(EFriendshipRepo eFriendshipRepo, UserRepo userRepo, UserService userService) {
-        this.eFriendshipRepo = eFriendshipRepo;
+    public FriendService(FriendshipRepo friendshipRepo, UserRepo userRepo, UserService userService) {
+        this.friendshipRepo = friendshipRepo;
         this.userRepo = userRepo;
         this.userService = userService;
     }
@@ -36,15 +36,15 @@ public class FriendService {
 
         var otherUser = userService.findById(Math.toIntExact(toUserId));
 
-        Long chkSentRequest = eFriendshipRepo.findFriendship(Long.valueOf(userId), toUserId);
+        Long chkSentRequest = friendshipRepo.findFriendship(Long.valueOf(userId), toUserId);
         if (chkSentRequest != null) return;
 
-        Long id = eFriendshipRepo.findFriendship(toUserId, Long.valueOf(userId));
+        Long id = friendshipRepo.findFriendship(toUserId, Long.valueOf(userId));
         if (id != null) {
-            var friendship = eFriendshipRepo.findById(id);
+            var friendship = friendshipRepo.findById(id);
             if (friendship.isPresent()) {
                 friendship.get().setStatus(1L);
-                eFriendshipRepo.save(friendship.get());
+                friendshipRepo.save(friendship.get());
             }
         } else {
             var friendship = new Friendship();
@@ -57,7 +57,7 @@ public class FriendService {
             friendship.setToNUser(toUser.get());
             friendship.setStatus(0L);
 
-            eFriendshipRepo.save(friendship);
+            friendshipRepo.save(friendship);
         }
     }
 
@@ -78,16 +78,16 @@ public class FriendService {
 
     public void refuseFriendRequest(Long toUserID) {
         var userId = userService.extractUserId();
-        Long id = eFriendshipRepo.findFriendship(Long.valueOf(userId), toUserID);
+        Long id = friendshipRepo.findFriendship(Long.valueOf(userId), toUserID);
 
         if (id != null) {
-            eFriendshipRepo.deleteById(id);
+            friendshipRepo.deleteById(id);
         }
 
-        Long oId = eFriendshipRepo.findFriendship(toUserID, Long.valueOf(userId));
+        Long oId = friendshipRepo.findFriendship(toUserID, Long.valueOf(userId));
 
         if (oId != null) {
-            eFriendshipRepo.deleteById(oId);
+            friendshipRepo.deleteById(oId);
         }
     }
 }

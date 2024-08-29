@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface EFriendshipRepo extends BaseRepo<Friendship, BaseFilter, Long> {
+public interface FriendshipRepo extends BaseRepo<Friendship, BaseFilter, Long> {
 
     @Query("""
             MATCH (n) WHERE n.user_id = $user_id_1

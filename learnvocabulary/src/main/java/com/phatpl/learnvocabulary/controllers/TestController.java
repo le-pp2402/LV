@@ -1,6 +1,6 @@
 package com.phatpl.learnvocabulary.controllers;
 
-import com.phatpl.learnvocabulary.repositories.graph.EFriendshipRepo;
+import com.phatpl.learnvocabulary.repositories.graph.FriendshipRepo;
 import com.phatpl.learnvocabulary.repositories.graph.UserRepo;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
 import org.slf4j.Logger;
@@ -17,12 +17,12 @@ public class TestController {
     private static final Logger log = LoggerFactory.getLogger(TestController.class);
     //    private final UserRepo repository;
     private final UserRepo userRepo;
-    private final EFriendshipRepo eFriendshipRepo;
+    private final FriendshipRepo friendshipRepo;
 
     @Autowired
-    public TestController(UserRepo userRepo, EFriendshipRepo eFriendshipRepo) {
+    public TestController(UserRepo userRepo, FriendshipRepo friendshipRepo) {
         this.userRepo = userRepo;
-        this.eFriendshipRepo = eFriendshipRepo;
+        this.friendshipRepo = friendshipRepo;
     }
 
     @GetMapping
