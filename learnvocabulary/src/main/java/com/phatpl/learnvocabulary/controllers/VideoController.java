@@ -28,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
 @RequestMapping("/video")
 public class VideoController {
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
     @Value("${WHISPER_API}")
     private String linkWhipserService;
     private static final HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();

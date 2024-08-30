@@ -24,7 +24,7 @@ public class CategoryService {
     ContainCategoryRepo containCategoryRepo;
 
     @Autowired
-    public CategoryService(CategoryRepo categoryRepo, VideoRepo videoRepo, ContainCategoryRepo containCategoryRepo, ContainCategoryRepo containCategoryRepo1) {
+    public CategoryService(CategoryRepo categoryRepo, VideoRepo videoRepo, ContainCategoryRepo containCategoryRepo1) {
         this.categoryRepo = categoryRepo;
         this.videoRepo = videoRepo;
         this.containCategoryRepo = containCategoryRepo1;
@@ -80,7 +80,7 @@ public class CategoryService {
 
         var chkExisted = containCategoryRepo.findByVideoIdAndCategoryId(videoId, req.getCategoryId());
         if (chkExisted.isPresent()) {
-            return containCategoryRepo.findById(chkExisted.get()).get();
+            return containCategoryRepo.findById(chkExisted.get()).orElse(null);
         }
 
         ContainCategory rel = new ContainCategory();
