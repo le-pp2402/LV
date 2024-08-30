@@ -1,5 +1,8 @@
 package com.phatpl.learnvocabulary.controllers;
 
+import com.phatpl.learnvocabulary.dtos.request.AttachContainCategory;
+import com.phatpl.learnvocabulary.services.CategoryService;
+import com.phatpl.learnvocabulary.services.DetachCategoryRequest;
 import com.phatpl.learnvocabulary.services.MinIOService;
 import com.phatpl.learnvocabulary.services.ResourceService;
 import com.phatpl.learnvocabulary.utils.BuildResponse;
@@ -11,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 @RequestMapping("/video")
 public class VideoController {
 
+    private final CategoryService categoryService;
     @Value("${WHISPER_API}")
     private String linkWhipserService;
     private static final HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
@@ -36,14 +37,15 @@ public class VideoController {
     ResourceService resourceService;
 
     @Autowired
-    public VideoController(MinIOService minIOService, ResourceService resourceService) {
+    public VideoController(MinIOService minIOService, ResourceService resourceService, CategoryService categoryService) {
         this.minIOService = minIOService;
         this.resourceService = resourceService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/{folder}/video/{file}")
-    public ResponseEntity loadVideo(@PathVariable("folder") String folder,
-                                    @PathVariable("file") String file) {
+    public ResponseEntity<?> loadVideo(@PathVariable("folder") String folder,
+                                       @PathVariable("file") String file) {
         try {
             var response = resourceService.getVideo(folder, file);
             byte[] resource = response.readAllBytes();
@@ -56,8 +58,8 @@ public class VideoController {
     }
 
     @GetMapping("/{folder}/x/{file}")
-    public ResponseEntity loadSubtitle(@PathVariable("folder") String folder,
-                                       @PathVariable("file") String file) {
+    public ResponseEntity<?> loadSubtitle(@PathVariable("folder") String folder,
+                                          @PathVariable("file") String file) {
         try {
             var response = resourceService.getSubtitle(folder, file);
             byte[] resource = response.readAllBytes();
@@ -70,7 +72,7 @@ public class VideoController {
     }
 
     @GetMapping("/{folder}/thumbnail")
-    public ResponseEntity loadThumbnail(@PathVariable("folder") String folder)
+    public ResponseEntity<?> loadThumbnail(@PathVariable("folder") String folder)
             throws MinioException, IOException, NoSuchAlgorithmException, InvalidKeyException {
         var response = minIOService.getImage(folder + "/thumbnail");
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(response.readAllBytes());
@@ -79,7 +81,7 @@ public class VideoController {
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping("/gen/{id}")
-    public ResponseEntity requestGenerateSubFile(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> requestGenerateSubFile(@PathVariable("id") Integer id) {
         try {
             HttpRequest req = HttpRequest.newBuilder()
                     .GET()
@@ -88,6 +90,36 @@ public class VideoController {
                     .build();
             HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
             return BuildResponse.ok(res.body());
+        } catch (Exception e) {
+            return BuildResponse.badRequest(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/category")
+    public ResponseEntity<?> getCategory(@PathVariable("id") Integer id) {
+        try {
+            return BuildResponse.ok(categoryService.findByVideoId(Long.valueOf(id)));
+        } catch (Exception e) {
+            return BuildResponse.badRequest(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PostMapping("/{id}/add-category")
+    public ResponseEntity<?> attachCategoryToVideo(@PathVariable("id") Integer id, @RequestBody AttachContainCategory req) {
+        try {
+            return BuildResponse.ok(categoryService.attachToVideo(Long.valueOf(id), req));
+        } catch (Exception e) {
+            return BuildResponse.badRequest(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @DeleteMapping("/{id}/remove-category")
+    public ResponseEntity<?> detachCategory(@PathVariable("id") Integer id, @RequestBody DetachCategoryRequest req) {
+        try {
+            categoryService.detachFromVideo(Long.valueOf(id), req);
+            return BuildResponse.ok("success");
         } catch (Exception e) {
             return BuildResponse.badRequest(e.getMessage());
         }

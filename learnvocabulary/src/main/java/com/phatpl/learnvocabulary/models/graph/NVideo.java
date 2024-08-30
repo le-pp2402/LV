@@ -12,31 +12,15 @@ import org.neo4j.ogm.annotation.Property;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@NodeEntity(label = "User")
-public class NUser {
+@AllArgsConstructor
+@NodeEntity(label = "Video")
+public class NVideo {
     @Id
     @GeneratedValue
     private Long id;
 
-    @Property(name = "user_id")
+    @Property("video_id")
     @NotNull
-    private Long UserId;
-
-    @Property(name = "username")
-    @NotNull
-    private String username;
-
-    @Property(name = "email")
-    @NotNull
-    String email;
-
-    @Property(name = "is_admin")
-    @NotNull
-    Boolean isAdmin = false;
-
-    @Property(name = "elo")
-    @NotNull
-    Long elo = 0L;
+    private Long videoId;
 }
