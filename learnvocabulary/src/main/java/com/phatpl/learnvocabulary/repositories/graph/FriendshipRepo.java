@@ -26,5 +26,5 @@ public interface FriendshipRepo extends BaseRepo<Friendship, BaseFilter, Long> {
     Friendship save(@NotNull Friendship friendship);
 
     void deleteById(@NotNull Long id);
-
+    
 }

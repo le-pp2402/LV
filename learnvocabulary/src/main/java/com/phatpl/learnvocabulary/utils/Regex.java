@@ -22,4 +22,5 @@ public class Regex {
     public static final String EMAIL = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
     public static final String USERNAME = "^[A-Za-z][A-Za-z0-9_]{7,29}$";
     public static final String PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+    public static final String CATEGORY = "^[A-Za-z][A-Za-z0-9_]{1,29}$";
 }

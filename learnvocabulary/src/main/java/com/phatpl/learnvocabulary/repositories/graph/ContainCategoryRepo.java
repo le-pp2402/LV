@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface ContainCategoryRepo extends BaseRepo<ContainCategory, BaseFilter, Long> {
     @Query("""
-            MATCH(v:Video)-[p: ContainCategoryRepo]->(c:Category)
-            WHERE p.video_id = $videoId AND ID(c) = $categoryId
-            return (p)
+            MATCH (v:Video) - [p: CONTAIN_CATEGORY] - (c:Category)
+            WHERE v.video_id = $videoId AND ID(c) = $categoryId
+            RETURN ID(p)
             """)
-    Optional<ContainCategory> findByVideoIdAndCategoryId(Long videoId, Long categoryId);
+    Optional<Long> findByVideoIdAndCategoryId(Long videoId, Long categoryId);
 }

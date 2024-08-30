@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttachContainCategory {
-    @JsonProperty("category_id")
-    private Long categoryId;
+public class CategorySearchRequest {
+    @JsonProperty("category_ids")
+    private List<Long> categoryIds;
 }

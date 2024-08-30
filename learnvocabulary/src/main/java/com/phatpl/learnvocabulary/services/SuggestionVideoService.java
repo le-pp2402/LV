@@ -34,12 +34,11 @@ public class SuggestionVideoService {
         return videoRepo.getSuggestionFromFriends(Long.valueOf(userId));
     }
 
-    List<NVideo> getSuggestionFromCategory(List<Integer> categoryId) {
-        var categories = new ArrayList<Integer>();
-        return videoRepo.getSuggestionFromCategory(categories);
+    List<NVideo> getSuggestionFromCategory(List<Long> categoryIds) {
+        return videoRepo.getSuggestionFromCategory(categoryIds);
     }
 
-    List<ResourceResponse> getSuggestionVideos(List<Integer> categoryID) {
+    public List<ResourceResponse> getSuggestionVideos(List<Long> categoryIds) {
         var result = new ArrayList<ResourceResponse>();
 
         getSuggestionFromFriends().forEach(video -> {
@@ -47,7 +46,7 @@ public class SuggestionVideoService {
             elem.ifPresent(resource -> result.add(resourceResponseMapper.toDTO(resource)));
         });
 
-        getSuggestionFromCategory(categoryID).forEach(video -> {
+        getSuggestionFromCategory(categoryIds).forEach(video -> {
             var elem = resourceRepository.findById(Math.toIntExact(video.getVideoId()));
             elem.ifPresent(resource -> result.add(resourceResponseMapper.toDTO(resource)));
         });

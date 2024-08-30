@@ -1,6 +1,7 @@
 package com.phatpl.learnvocabulary.dtos.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.phatpl.learnvocabulary.utils.Regex;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttachContainCategory {
-    @JsonProperty("category_id")
+public class CategoryUpdateRequest {
     private Long categoryId;
+
+    @Pattern(regexp = Regex.CATEGORY, message = "Invalid category name")
+    private String category;
 }

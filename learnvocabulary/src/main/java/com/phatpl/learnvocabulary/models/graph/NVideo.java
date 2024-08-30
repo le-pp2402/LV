@@ -22,5 +22,5 @@ public class NVideo {
 
     @Property("video_id")
     @NotNull
-    private Integer videoId;
+    private Long videoId;
 }

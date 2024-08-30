@@ -9,24 +9,27 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface VideoRepo extends BaseRepo<VideoRepo, BaseFilter, Long> {
+public interface VideoRepo extends BaseRepo<NVideo, BaseFilter, Long> {
+
     Optional<NVideo> findByVideoId(Long videoId);
 
     @Query("""
-                MATCH (u: User) - [f: IS_FRIEND] - (f: User) - [l: LIKE] -> (v: Video)
-                WHERE f.status = 1 AND u.user_id = $userId
-                WITH v, rand() AS rd
-                ORDER BY rd
-                LIMIT 10
+            MATCH (u: User) - [f: IS_FRIEND] - (uf: User) - [l: LIKE] -> (v: Video)
+            WHERE f.status = 1 AND u.user_id = $userId
+            WITH v, rand() AS rd
+            ORDER BY rd
+            LIMIT 10
+            RETURN v
             """)
     List<NVideo> getSuggestionFromFriends(Long userId);
 
     @Query("""
-            MATCH (n: Video) - [p:ContainCategory] - (c: Category)
-            Where ID(c) in $categoryId
-            WITH c, rand() AS rd
+            MATCH (v: Video) - [p:CONTAIN_CATEGORY] - (c: Category)
+            WHERE ID(c) in $categoryId
+            WITH v, rand() AS rd
             ORDER BY rd
             LIMIT 10
+            RETURN v
             """)
-    List<NVideo> getSuggestionFromCategory(List<Integer> categoryId);
+    List<NVideo> getSuggestionFromCategory(List<Long> categoryId);
 }
